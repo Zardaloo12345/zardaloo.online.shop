@@ -1,19 +1,23 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-!-- دکمه شناور چت‌جی‌پی‌تی زردآلو در پایین چپ -->
-<div id="zardaloo-chatgpt-widget" style="position: fixed; bottom: 20px; left: 20px; z-index: 99999; font-family: Tahoma, sans-serif;">
+ 
+        <
+    </div>
+</div>
+
+<!-- دکمه شناور چت‌جی‌پی‌تی زردآلو در پایین چپ -->
+<div id="zardaloo-chatgpt-widget" style="position: fixed; bottom: 20px; left: 20px; z-index: 99999; font-family: Tahoma, sans-serif; zoom: 1; transform: none;">
     
     <!-- دکمه با آرم چت‌جی‌پی‌تی -->
     <button onclick="toggleZardalooChat()" style="background: #10a37f; color: white; border: none; border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: transform 0.2s;">
-        <!-- آرم چت‌جی‌پی‌تی SVG -->
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" fill="white"/>
         </svg>
     </button>
     
     <!-- پنجره چت -->
-    <div id="z-chat-box" style="display: none; width: 330px; height: 480px; background: white; border: 2px solid #10a37f; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); flex-direction: column; overflow: hidden; position: absolute; bottom: 75px; left: 0;">
+    <div id="z-chat-box" style="display: none; width: 330px; height: 480px; background: white; border: 2px solid #10a37f; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); flex-direction: column; overflow: hidden; position: absolute; bottom: 75px; left: 0; zoom: 1; transform: none;">
         
         <!-- هدر چت‌بات -->
         <div style="background: #10a37f; color: white; padding: 12px; font-weight: bold; text-align: center; display: flex; justify-content: space-between; align-items: center;">
@@ -22,7 +26,7 @@
         </div>
         
         <!-- پیام‌ها -->
-        <div id="z-chat-messages" style="flex: 1; padding: 12px; overflow-y: auto; font-size: 13px; direction: rtl; text-align: right; background: #f9f9f9;">
+        <div id="z-chat-messages" style="flex: 1; padding: 12px; overflow-y: auto; font-size: 14px; direction: rtl; text-align: right; background: #f9f9f9;">
             <div style="margin: 6px 0; background: #e2f8f0; padding: 8px 12px; border-radius: 8px; color: #005c36;">
                 سلام عرفان عزیز! من دستیار جامع زردآلوم 🍋. از ثبت کالا، سبد خرید، مدیریت یا افراد سایت هر چی می‌خوای بپرس تا دقیق جواب بدم!
             </div>
@@ -30,7 +34,7 @@
         
         <!-- بخش ارسال پیام -->
         <div style="padding: 10px; border-top: 1px solid #ddd; background: white; display: flex;">
-            <input type="text" id="z-user-input" placeholder="سوال خود را بپرسید..." style="flex: 1; border: 1px solid #ccc; padding: 8px; border-radius: 6px; outline: none; font-size: 13px;" onkeypress="if(event.key === 'Enter') sendZardalooMessage()">
+            <input type="text" id="z-user-input" placeholder="سوال خود را بپرسید..." style="flex: 1; border: 1px solid #ccc; padding: 8px; border-radius: 6px; outline: none; font-size: 14px;" onkeypress="if(event.key === 'Enter') sendZardalooMessage()">
             <button onclick="sendZardalooMessage()" style="background: #10a37f; color: white; border: none; padding: 8px 14px; margin-right: 6px; border-radius: 6px; cursor: pointer; font-weight: bold;">ارسال</button>
         </div>
     </div>
@@ -48,12 +52,10 @@ function sendZardalooMessage() {
     let q = input.value.trim();
     if (!q) return;
 
-    // نمایش پیام کاربر
     messages.innerHTML += `<div style="margin: 6px 0; text-align: left;"><span style="background: #e0e0e0; padding: 6px 10px; border-radius: 8px; display: inline-block; color: #333;">${q}</span></div>`;
     input.value = '';
     messages.scrollTop = messages.scrollHeight;
 
-    // تحلیل جامع هوش مصنوعی زردآلو
     setTimeout(() => {
         let reply = getZardalooAIResponse(q);
         messages.innerHTML += `<div style="margin: 6px 0;"><span style="background: #e2f8f0; padding: 8px 12px; border-radius: 8px; display: inline-block; color: #005c36; line-height: 1.6;">${reply}</span></div>`;
@@ -62,7 +64,18 @@ function sendZardalooMessage() {
 }
 
 function getZardalooAIResponse(question) {
-    let q = question.toLowerCase();
+    let q = question.toLowerCase().replace(/\u200c/g, ' ').trim();
+
+    // ⭐ سلام و احوال‌پرسی — همیشه اول چک میشه
+    if (/^(سلام|سلام سلام|درود|هی|های|hello|hi|salam)\b/.test(q) || q.includes('سلام') || q.includes('درود')) {
+        return "سلام‌علیکم و درود! 😄🍋 خوش اومدی به چت هوشمند زردآلو! هر سوالی دربارهٔ بازار، ثبت کالا، سبد خرید، پیام‌رسان، گزارش فروشنده یا مدیریت داری، من اینجام! بفرما بپرس 💛";
+    }
+    if (q.includes('خوبی') || q.includes('چطوری') || q.includes('حال شما') || q.includes('چه خبر')) {
+        return "من همیشه‌همیشه شارژم و سرحالم! ⚡ چون زردآلوی شیرینم! 😄 تو خوبی؟ سوالی دربارهٔ سایت داری، من آماده‌ام! 💛";
+    }
+    if (q.includes('ممنون') || q.includes('مرسی') || q.includes('سپاس') || q.includes('متشکر')) {
+        return "خواهش می‌کنم عزیز! وظیفه‌ست! 😊🍋 هر وقت چیزی خواستی من همیشه پایین‌چپ صفحم و منتظرتم! 🧡";
+    }
 
     // سازنده و تشکرها
     if (q.includes('سازنده') || q.includes('عرفان') || q.includes('کی ساخته')) {
@@ -81,7 +94,7 @@ function getZardalooAIResponse(question) {
         return "در بخش **سبد خرید** می‌تونید کالاهای انتخابی رو مدیریت کنید و با وارد کردن **کد تخفیف** از تخفیف‌ها استفاده کنید. (جزئیات محاسبه تخفیف در اطلاعات سایت ذکر نشده).";
     }
     // پیام‌رسان
-    if (q.includes('پیام') || q.includes('پیام‌رسان') || q.includes('ارتباط')) {
+    if (q.includes('پیام')) {
         return "بخش پیام‌رسان زردآلو خیلی سادس: کافیه **شماره زردآلو گیرنده** و **متن پیام** رو وارد کنی تا پیام ارسال بشه! 📨";
     }
     // گزارش فروشنده
@@ -94,13 +107,13 @@ function getZardalooAIResponse(question) {
     }
     // پروفایل
     if (q.includes('پروفایل') || q.includes('حساب')) {
-        return "پروفایل من در زردآلو شامل این موارد میشه: نام، شماره تماس، و شماره زردآلو.";
+        return "پروفایل در زردآلو شامل این موارد میشه: نام، شماره تماس، و شماره زردآلو.";
     }
 
     // پیش‌فرض برای سوالات نامشخص
     return "عجب سوال باحالی! اما این جزئیات در اطلاعات فعلی سایت زردآلو مشخص نیست. می‌تونی درباره بازار، ثبت کالا، سبد خرید، پیام‌رسان یا مدیریت بپرسی! 😉🍋";
 }
-</script
+</script>
 
 
 
