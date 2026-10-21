@@ -1175,5 +1175,598 @@ if (state.user) {
 renderCart();
 console.log('🚀 Zardaloo ready (offline mode)');
 </script>
+<!-- ================= انتخابگر زبان ================= -->
+<div id="langSelector" style="
+  position: fixed; bottom: 20px; right: 20px; z-index: 99997;
+  background: var(--card, #fff); border: 1px solid var(--border, #eee);
+  border-radius: 50px; box-shadow: 0 8px 25px rgba(0,0,0,.15);
+  display: flex; align-items: center; gap: 6px; padding: 6px 12px 6px 6px;
+  cursor: pointer; transition: transform .2s;
+" title="انتخاب زبان">
+  <div style="
+    width: 38px; height: 38px; border-radius: 50%;
+    background: linear-gradient(135deg,#4a90d9,#6fb1e0);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 20px;
+  ">🌐</div>
+  <span id="currentLangLabel" style="font-size: 14px; font-weight: bold; color: var(--text, #222);">فارسی</span>
+  <span style="font-size: 11px; color: var(--text-soft, #888);">▼</span>
+</div>
+
+<!-- ================= پنل انتخاب زبان ================= -->
+<div id="langPanel" style="
+  position: fixed; bottom: 80px; right: 20px; z-index: 99997;
+  width: 320px; max-width: calc(100vw - 40px);
+  max-height: 420px; background: var(--card, #fff);
+  border: 1px solid var(--border, #eee); border-radius: 18px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.3);
+  display: none; flex-direction: column; overflow: hidden;
+">
+  <!-- هدر -->
+  <div style="
+    background: linear-gradient(135deg,#4a90d9,#6fb1e0);
+    color: #fff; padding: 14px 18px; font-weight: bold; font-size: 15px;
+    display: flex; justify-content: space-between; align-items: center;
+  ">
+    <span>🌐 انتخاب زبان</span>
+    <button id="langClose" style="
+      background: rgba(255,255,255,.2); border: none; color: #fff;
+      width: 28px; height: 28px; border-radius: 50%; font-size: 15px; cursor: pointer;
+    ">×</button>
+  </div>
+
+  <!-- جستجو -->
+  <div style="padding: 10px 12px; border-bottom: 1px solid var(--border, #eee);">
+    <input id="langSearch" type="text" placeholder="جستجوی زبان..." style="
+      width: 100%; padding: 10px 14px; border: 1px solid var(--border, #eee);
+      border-radius: 12px; outline: none; background: var(--bg, #fff);
+      color: var(--text, #222); font-size: 13px;
+    ">
+  </div>
+
+  <!-- لیست زبان‌ها -->
+  <div id="langList" style="
+    flex: 1; overflow-y: auto; padding: 8px;
+    background: var(--bg-soft, #fafafa);
+  "></div>
+
+  <!-- فوتر: ترجمه خودکار -->
+  <div style="
+    padding: 10px 12px; border-top: 1px solid var(--border, #eee);
+    background: var(--card, #fff); font-size: 12px; color: var(--text-soft, #888);
+    display: flex; align-items: center; gap: 8px;
+  ">
+    <input type="checkbox" id="autoTranslate" checked style="cursor:pointer;">
+    <label for="autoTranslate" style="cursor:pointer;">ترجمه خودکار بقیه زبان‌ها (Google Translate)</label>
+  </div>
+</div>
+
+<style>
+  #langSelector:hover { transform: scale(1.05); }
+  .lang-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 10px; cursor: pointer;
+    transition: background .15s; font-size: 14px;
+    color: var(--text, #222);
+  }
+  .lang-item:hover { background: var(--yellow, #ffd400); color: #222; }
+  .lang-item.active { background: var(--yellow, #ffd400); color: #222; font-weight: bold; }
+  .lang-flag { font-size: 18px; }
+  .lang-code { font-size: 11px; color: var(--text-soft, #888); margin-right: auto; }
+  .lang-item:hover .lang-code, .lang-item.active .lang-code { color: #222; }
+</style>
+
+<script>
+/* ================= سیستم چندزبانه زردآلو ================= */
+(function () {
+  /* ---------- لیست کامل زبان‌ها (کدهای ISO) ---------- */
+  const LANGUAGES = [
+    { code: 'fa', name: 'فارسی', flag: '🇮🇷' },
+    { code: 'en', name: 'English', flag: '🇬🇧' },
+    { code: 'ar', name: 'العربية', flag: '🇸🇦' },
+    { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
+    { code: 'fr', name: 'Français', flag: '🇫🇷' },
+    { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
+    { code: 'es', name: 'Español', flag: '🇪🇸' },
+    { code: 'ru', name: 'Русский', flag: '🇷🇺' },
+    { code: 'zh', name: '中文', flag: '🇨🇳' },
+    { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' },
+    { code: 'ur', name: 'اردو', flag: '🇵🇰' },
+    { code: 'ja', name: '日本語', flag: '🇯🇵' },
+    { code: 'ko', name: '한국어', flag: '🇰🇷' },
+    { code: 'it', name: 'Italiano', flag: '🇮🇹' },
+    { code: 'pt', name: 'Português', flag: '🇵🇹' },
+    { code: 'nl', name: 'Nederlands', flag: '🇳🇱' },
+    { code: 'sv', name: 'Svenska', flag: '🇸🇪' },
+    { code: 'no', name: 'Norsk', flag: '🇳🇴' },
+    { code: 'da', name: 'Dansk', flag: '🇩🇰' },
+    { code: 'fi', name: 'Suomi', flag: '🇫🇮' },
+    { code: 'pl', name: 'Polski', flag: '🇵🇱' },
+    { code: 'cs', name: 'Čeština', flag: '🇨🇿' },
+    { code: 'sk', name: 'Slovenčina', flag: '🇸🇰' },
+    { code: 'hu', name: 'Magyar', flag: '🇭🇺' },
+    { code: 'ro', name: 'Română', flag: '🇷🇴' },
+    { code: 'bg', name: 'Български', flag: '🇧🇬' },
+    { code: 'el', name: 'Ελληνικά', flag: '🇬🇷' },
+    { code: 'he', name: 'עברית', flag: '🇮🇱' },
+    { code: 'th', name: 'ไทย', flag: '🇹🇭' },
+    { code: 'vi', name: 'Tiếng Việt', flag: '🇻🇳' },
+    { code: 'id', name: 'Bahasa Indonesia', flag: '🇮🇩' },
+    { code: 'ms', name: 'Bahasa Melayu', flag: '🇲🇾' },
+    { code: 'tl', name: 'Filipino', flag: '🇵🇭' },
+    { code: 'bn', name: 'বাংলা', flag: '🇧🇩' },
+    { code: 'ta', name: 'தமிழ்', flag: '🇮🇳' },
+    { code: 'te', name: 'తెలుగు', flag: '🇮🇳' },
+    { code: 'mr', name: 'मराठी', flag: '🇮🇳' },
+    { code: 'gu', name: 'ગુજરાતી', flag: '🇮🇳' },
+    { code: 'pa', name: 'ਪੰਜਾਬੀ', flag: '🇮🇳' },
+    { code: 'sw', name: 'Kiswahili', flag: '🇰🇪' },
+    { code: 'am', name: 'አማርኛ', flag: '🇪🇹' },
+    { code: 'ha', name: 'Hausa', flag: '🇳🇬' },
+    { code: 'yo', name: 'Yorùbá', flag: '🇳🇬' },
+    { code: 'ig', name: 'Igbo', flag: '🇳🇬' },
+    { code: 'zu', name: 'isiZulu', flag: '🇿🇦' },
+    { code: 'af', name: 'Afrikaans', flag: '🇿🇦' },
+    { code: 'uk', name: 'Українська', flag: '🇺🇦' },
+    { code: 'sr', name: 'Српски', flag: '🇷🇸' },
+    { code: 'hr', name: 'Hrvatski', flag: '🇭🇷' },
+    { code: 'sl', name: 'Slovenščina', flag: '🇸🇮' },
+    { code: 'lt', name: 'Lietuvių', flag: '🇱🇹' },
+    { code: 'lv', name: 'Latviešu', flag: '🇱🇻' },
+    { code: 'et', name: 'Eesti', flag: '🇪🇪' },
+    { code: 'ka', name: 'ქართული', flag: '🇬🇪' },
+    { code: 'hy', name: 'Հայերեն', flag: '🇦🇲' },
+    { code: 'az', name: 'Azərbaycan', flag: '🇦🇿' },
+    { code: 'kk', name: 'Қазақ', flag: '🇰🇿' },
+    { code: 'uz', name: 'Oʻzbek', flag: '🇺🇿' },
+    { code: 'mn', name: 'Монгол', flag: '🇲🇳' },
+    { code: 'ne', name: 'नेपाली', flag: '🇳🇵' },
+    { code: 'si', name: 'සිංහල', flag: '🇱🇰' },
+    { code: 'km', name: 'ខ្មែរ', flag: '🇰🇭' },
+    { code: 'lo', name: 'ລາວ', flag: '🇱🇦' },
+    { code: 'my', name: 'မြန်မာ', flag: '🇲🇲' },
+    { code: 'fa-AF', name: 'دری', flag: '🇦🇫' },
+    { code: 'ku', name: 'Kurdî', flag: '🏳️' },
+    { code: 'ps', name: 'پښتو', flag: '🇦🇫' },
+    { code: 'tg', name: 'Тоҷикӣ', flag: '🇹🇯' },
+    { code: 'ky', name: 'Кыргызча', flag: '🇰🇬' },
+  ];
+
+  /* ---------- ترجمه‌های آماده (برای زبان‌های پرکاربرد) ---------- */
+  const TRANSLATIONS = {
+    en: {
+      'زردآلو': 'Zardaloo',
+      'با زردآلو خرید راحته!': 'Shopping is easy with Zardaloo!',
+      'ورود میهمان': 'Guest Login',
+      'ورود': 'Login',
+      'خانه': 'Home',
+      'بازار': 'Market',
+      'بازار زردآلو': 'Zardaloo Market',
+      'ثبت کالا': 'Add Product',
+      'سبد خرید': 'Cart',
+      'پیام‌رسان': 'Messenger',
+      'گزارش': 'Report',
+      'گزارش فروشنده': 'Seller Report',
+      'مدیریت': 'Manage',
+      'درباره': 'About',
+      'درباره زردآلو': 'About Zardaloo',
+      'نام': 'Name',
+      'شماره تماس': 'Phone',
+      'شماره زردآلو': 'Zardaloo ID',
+      'ذخیره و ورود': 'Save & Enter',
+      'پروفایل خودت را بساز': 'Create Your Profile',
+      'اطلاعاتت را کامل کن': 'Complete your info',
+      'جستجوی کالا...': 'Search products...',
+      'همه دسته‌ها': 'All categories',
+      'دیجیتال': 'Digital',
+      'پوشاک': 'Clothing',
+      'خانه و آشپزخانه': 'Home & Kitchen',
+      'سایر': 'Other',
+      'جدیدترین': 'Newest',
+      'ارزان‌ترین': 'Cheapest',
+      'گران‌ترین': 'Most expensive',
+      'افزودن به سبد': 'Add to cart',
+      'نام کالا': 'Product name',
+      'توضیحات': 'Description',
+      'قیمت (تومان)': 'Price (Toman)',
+      'تعداد موجودی': 'Stock',
+      'دسته‌بندی': 'Category',
+      'تصویر کالا (اختیاری)': 'Product image (optional)',
+      'ثبت کالا': 'Add product',
+      'سبد خرید خالی است.': 'Cart is empty.',
+      'نهایی کردن خرید': 'Checkout',
+      'پیامی وجود ندارد.': 'No messages.',
+      'ارسال': 'Send',
+      'تعداد کالا': 'Products',
+      'ارزش کل (تومان)': 'Total value (Toman)',
+      'بازدید کل': 'Total views',
+      'کالایی برای مدیریت وجود ندارد.': 'No products to manage.',
+      'خروج': 'Logout',
+      'تم': 'Theme',
+      'سازنده': 'Developer',
+    },
+    ar: {
+      'زردآلو': 'زردآلو',
+      'با زردآلو خرید راحته!': 'التسوق سهل مع زردآلو!',
+      'ورود میهمان': 'دخول الضيف',
+      'ورود': 'تسجيل الدخول',
+      'خانه': 'الرئيسية',
+      'بازار': 'السوق',
+      'بازار زردآلو': 'سوق زردآلو',
+      'ثبت کالا': 'إضافة منتج',
+      'سبد خرید': 'سلة التسوق',
+      'پیام‌رسان': 'الرسائل',
+      'گزارش': 'التقرير',
+      'مدیریت': 'الإدارة',
+      'درباره': 'حول',
+      'نام': 'الاسم',
+      'شماره تماس': 'رقم الهاتف',
+      'ذخیره و ورود': 'حفظ ودخول',
+      'جستجوی کالا...': 'ابحث عن منتج...',
+      'همه دسته‌ها': 'كل الفئات',
+      'افزودن به سبد': 'أضف إلى السلة',
+      'خروج': 'خروج',
+    },
+    tr: {
+      'زردآلو': 'Zardaloo',
+      'با زردآلو خرید راحته!': 'Zardaloo ile alışveriş kolay!',
+      'ورود میهمان': 'Misafir Girişi',
+      'ورود': 'Giriş',
+      'خانه': 'Ana Sayfa',
+      'بازار': 'Pazar',
+      'ثبت کالا': 'Ürün Ekle',
+      'سبد خرید': 'Sepet',
+      'پیام‌رسان': 'Mesajlar',
+      'گزارش': 'Rapor',
+      'مدیریت': 'Yönetim',
+      'درباره': 'Hakkında',
+      'نام': 'Ad',
+      'شماره تماس': 'Telefon',
+      'ذخیره و ورود': 'Kaydet ve Gir',
+      'جستجوی کالا...': 'Ürün ara...',
+      'افزودن به سبد': 'Sepete ekle',
+      'خروج': 'Çıkış',
+    },
+    fr: {
+      'زردآلو': 'Zardaloo',
+      'با زردآلو خرید راحته!': 'Acheter est facile avec Zardaloo!',
+      'ورود میهمان': 'Connexion Invité',
+      'ورود': 'Connexion',
+      'خانه': 'Accueil',
+      'بازار': 'Marché',
+      'ثبت کالا': 'Ajouter un produit',
+      'سبد خرید': 'Panier',
+      'پیام‌رسان': 'Messages',
+      'گزارش': 'Rapport',
+      'مدیریت': 'Gestion',
+      'درباره': 'À propos',
+      'نام': 'Nom',
+      'شماره تماس': 'Téléphone',
+      'ذخیره و ورود': 'Enregistrer et entrer',
+      'جستجوی کالا...': 'Rechercher un produit...',
+      'افزودن به سبد': 'Ajouter au panier',
+      'خروج': 'Déconnexion',
+    },
+    de: {
+      'زردآلو': 'Zardaloo',
+      'با زردآلو خرید راحته!': 'Einkaufen ist einfach mit Zardaloo!',
+      'ورود میهمان': 'Gast-Login',
+      'ورود': 'Anmelden',
+      'خانه': 'Startseite',
+      'بازار': 'Markt',
+      'ثبت کالا': 'Produkt hinzufügen',
+      'سبد خرید': 'Warenkorb',
+      'پیام‌رسان': 'Nachrichten',
+      'گزارش': 'Bericht',
+      'مدیریت': 'Verwaltung',
+      'درباره': 'Über',
+      'نام': 'Name',
+      'شماره تماس': 'Telefon',
+      'ذخیره و ورود': 'Speichern & Eintreten',
+      'جستجوی کالا...': 'Produkt suchen...',
+      'افزودن به سبد': 'In den Warenkorb',
+      'خروج': 'Abmelden',
+    },
+    es: {
+      'زردآلو': 'Zardaloo',
+      'با زردآلو خرید راحته!': '¡Comprar es fácil con Zardaloo!',
+      'ورود میهمان': 'Acceso Invitado',
+      'ورود': 'Iniciar sesión',
+      'خانه': 'Inicio',
+      'بازار': 'Mercado',
+      'ثبت کالا': 'Añadir producto',
+      'سبد خرید': 'Carrito',
+      'پیام‌رسان': 'Mensajes',
+      'گزارش': 'Informe',
+      'مدیریت': 'Gestión',
+      'درباره': 'Acerca de',
+      'نام': 'Nombre',
+      'شماره تماس': 'Teléfono',
+      'ذخیره و ورود': 'Guardar y entrar',
+      'جستجوی کالا...': 'Buscar producto...',
+      'افزودن به سبد': 'Añadir al carrito',
+      'خروج': 'Cerrar sesión',
+    },
+    ru: {
+      'زردآلو': 'Zardaloo',
+      'با زردآلو خرید راحته!': 'Покупки легко с Zardaloo!',
+      'ورود میهمان': 'Вход гостя',
+      'ورود': 'Войти',
+      'خانه': 'Главная',
+      'بازار': 'Рынок',
+      'ثبت کالا': 'Добавить товар',
+      'سبد خرید': 'Корзина',
+      'پیام‌رسان': 'Сообщения',
+      'گزارش': 'Отчёт',
+      'مدیریت': 'Управление',
+      'درباره': 'О нас',
+      'نام': 'Имя',
+      'شماره تماس': 'Телефон',
+      'ذخیره و ورود': 'Сохранить и войти',
+      'جستجوی کالا...': 'Поиск товара...',
+      'افزودن به سبد': 'В корзину',
+      'خروج': 'Выйти',
+    },
+    zh: {
+      'زردآلو': 'Zardaloo',
+      'با زردآلو خرید راحته!': '用 Zardaloo 购物轻松！',
+      'ورود میهمان': '访客登录',
+      'ورود': '登录',
+      'خانه': '首页',
+      'بازار': '市场',
+      'ثبت کالا': '添加商品',
+      'سبد خرید': '购物车',
+      'پیام‌رسان': '消息',
+      'گزارش': '报告',
+      'مدیریت': '管理',
+      'درباره': '关于',
+      'نام': '姓名',
+      'شماره تماس': '电话',
+      'ذخیره و ورود': '保存并进入',
+      'جستجوی کالا...': '搜索商品...',
+      'افزودن به سبد': '加入购物车',
+      'خروج': '退出',
+    },
+    hi: {
+      'زردآلو': 'Zardaloo',
+      'با زردآلو خرید راحته!': 'Zardaloo के साथ खरीदारी आसान!',
+      'ورود میهمان': 'अतिथि लॉगिन',
+      'ورود': 'लॉगिन',
+      'خانه': 'होम',
+      'بازار': 'बाज़ार',
+      'ثبت کالا': 'उत्पाद जोड़ें',
+      'سبد خرید': 'कार्ट',
+      'پیام‌رسان': 'संदेश',
+      'گزارش': 'रिपोर्ट',
+      'مدیریت': 'प्रबंधन',
+      'درباره': 'के बारे में',
+      'نام': 'नाम',
+      'شماره تماس': 'फ़ोन',
+      'ذخیره و ورود': 'सहेजें और प्रवेश करें',
+      'جستجوی کالا...': 'उत्पाद खोजें...',
+      'افزودن به سبد': 'कार्ट में जोड़ें',
+      'خروج': 'लॉगआउट',
+    },
+    ur: {
+      'زردآلو': 'زردآلو',
+      'با زردآلو خرید راحته!': 'زردآلو کے ساتھ خریداری آسان!',
+      'ورود میهمان': 'مہمان لاگ ان',
+      'ورود': 'لاگ ان',
+      'خانه': 'ہوم',
+      'بازار': 'بازار',
+      'ثبت کالا': 'پروڈکٹ شامل کریں',
+      'سبد خرید': 'کارٹ',
+      'پیام‌رسان': 'پیغامات',
+      'گزارش': 'رپورٹ',
+      'مدیریت': 'انتظام',
+      'درباره': 'کے بارے میں',
+      'نام': 'نام',
+      'شماره تماس': 'فون',
+      'ذخیره و ورود': 'محفوظ کریں اور داخل ہوں',
+      'جستجوی کالا...': 'پروڈکٹ تلاش کریں...',
+      'افزودن به سبد': 'کارٹ میں شامل کریں',
+      'خروج': 'لاگ آؤٹ',
+    },
+  };
+
+  /* ---------- وضعیت ---------- */
+  let currentLang = localStorage.getItem('zd_lang') || 'fa';
+  const originalTexts = new Map(); // برای بازگردانی به فارسی
+
+  /* ---------- عناصر ---------- */
+  const selector = document.getElementById('langSelector');
+  const panel = document.getElementById('langPanel');
+  const list = document.getElementById('langList');
+  const search = document.getElementById('langSearch');
+  const closeBtn = document.getElementById('langClose');
+  const currentLabel = document.getElementById('currentLangLabel');
+  const autoTranslateChk = document.getElementById('autoTranslate');
+
+  /* ---------- باز/بسته ---------- */
+  selector.addEventListener('click', () => {
+    const isOpen = panel.style.display === 'flex';
+    panel.style.display = isOpen ? 'none' : 'flex';
+    if (!isOpen) renderList();
+  });
+  closeBtn.addEventListener('click', () => panel.style.display = 'none');
+
+  /* ---------- رندر لیست زبان‌ها ---------- */
+  function renderList(filter = '') {
+    const q = filter.toLowerCase().trim();
+    const filtered = LANGUAGES.filter(l =>
+      l.name.toLowerCase().includes(q) ||
+      l.code.toLowerCase().includes(q) ||
+      l.flag.includes(q)
+    );
+    if (filtered.length === 0) {
+      list.innerHTML = '<div style="text-align:center; padding:20px; color:#888;">زبانی یافت نشد.</div>';
+      return;
+    }
+    list.innerHTML = filtered.map(l => `
+      <div class="lang-item ${l.code === currentLang ? 'active' : ''}" data-code="${l.code}">
+        <span class="lang-flag">${l.flag}</span>
+        <span>${l.name}</span>
+        <span class="lang-code">${l.code}</span>
+      </div>
+    `).join('');
+
+    list.querySelectorAll('.lang-item').forEach(el => {
+      el.addEventListener('click', () => {
+        applyLanguage(el.dataset.code);
+        panel.style.display = 'none';
+      });
+    });
+  }
+
+  search.addEventListener('input', (e) => renderList(e.target.value));
+
+  /* ---------- ذخیره متن اصلی ---------- */
+  function captureOriginalTexts() {
+    document.querySelectorAll('[data-i18n], h1, h2, h3, p, button, label, option, span, a').forEach(el => {
+      // فقط عناصری که متن مستقیم دارن
+      if (el.children.length === 0 && el.textContent.trim()) {
+        if (!originalTexts.has(el)) {
+          originalTexts.set(el, el.textContent.trim());
+        }
+      }
+    });
+  }
+
+  /* ---------- ترجمه با دیکشنری ---------- */
+  function translateWithDict(lang) {
+    const dict = TRANSLATIONS[lang];
+    if (!dict) return false;
+    originalTexts.forEach((original, el) => {
+      if (dict[original]) {
+        el.textContent = dict[original];
+      }
+    });
+    return true;
+  }
+
+  /* ---------- بازگردانی به فارسی ---------- */
+  function restorePersian() {
+    originalTexts.forEach((original, el) => {
+      el.textContent = original;
+    });
+    document.documentElement.setAttribute('dir', 'rtl');
+    document.documentElement.setAttribute('lang', 'fa');
+  }
+
+  /* ---------- ترجمه با Google Translate (برای بقیه زبان‌ها) ---------- */
+  let gtScriptLoaded = false;
+  function loadGoogleTranslate(callback) {
+    if (gtScriptLoaded) { callback(); return; }
+    if (window.google && window.google.translate) {
+      gtScriptLoaded = true;
+      callback();
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+    script.onload = () => {
+      window.googleTranslateElementInit = function () {
+        new window.google.translate.TranslateElement({
+          pageLanguage: 'fa',
+          includedLanguages: LANGUAGES.map(l => l.code.split('-')[0]).join(','),
+          autoDisplay: false,
+        }, 'google_translate_element');
+        gtScriptLoaded = true;
+        callback();
+      };
+    };
+    document.body.appendChild(script);
+
+    if (!document.getElementById('google_translate_element')) {
+      const div = document.createElement('div');
+      div.id = 'google_translate_element';
+      div.style.display = 'none';
+      document.body.appendChild(div);
+    }
+  }
+
+  function translateWithGoogle(lang) {
+    loadGoogleTranslate(() => {
+      // انتخاب زبان از select گوگل
+      const select = document.querySelector('.goog-te-combo');
+      if (select) {
+        select.value = lang;
+        select.dispatchEvent(new Event('change'));
+      } else {
+        setTimeout(() => translateWithGoogle(lang), 500);
+      }
+    });
+  }
+
+  /* ---------- اعمال زبان ---------- */
+  function applyLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('zd_lang', lang);
+
+    // برچسب
+    const langInfo = LANGUAGES.find(l => l.code === lang);
+    if (currentLabel) currentLabel.textContent = langInfo ? langInfo.name : lang;
+
+    // اگه فارسی
+    if (lang === 'fa') {
+      restorePersian();
+      removeGoogleTranslate();
+      return;
+    }
+
+    // اگه دیکشنری داریم
+    if (TRANSLATIONS[lang]) {
+      restorePersian();
+      // جهت
+      if (lang === 'ar' || lang === 'ur' || lang === 'he' || lang === 'fa-AF' || lang === 'ps') {
+        document.documentElement.setAttribute('dir', 'rtl');
+      } else {
+        document.documentElement.setAttribute('dir', 'ltr');
+      }
+      document.documentElement.setAttribute('lang', lang);
+      translateWithDict(lang);
+    } else if (autoTranslateChk.checked) {
+      // ترجمه با گوگل
+      restorePersian();
+      if (lang === 'ar' || lang === 'ur' || lang === 'he' || lang === 'fa-AF' || lang === 'ps') {
+        document.documentElement.setAttribute('dir', 'rtl');
+      } else {
+        document.documentElement.setAttribute('dir', 'ltr');
+      }
+      document.documentElement.setAttribute('lang', lang);
+      translateWithGoogle(lang);
+    }
+
+    // بستن پنل
+    panel.style.display = 'none';
+  }
+
+  function removeGoogleTranslate() {
+    const iframe = document.querySelector('.goog-te-banner-frame');
+    if (iframe) iframe.remove();
+    document.body.style.top = '0';
+    const gt = document.getElementById('google_translate_element');
+    if (gt) gt.innerHTML = '';
+  }
+
+  /* ---------- راه‌اندازی اولیه ---------- */
+  function init() {
+    // صبر تا DOM کامل لود بشه
+    setTimeout(captureOriginalTexts, 500);
+    // اگه زبان قبلاً انتخاب شده
+    if (currentLang !== 'fa') {
+      setTimeout(() => applyLanguage(currentLang), 800);
+    }
+    const langInfo = LANGUAGES.find(l => l.code === currentLang);
+    if (currentLabel && langInfo) currentLabel.textContent = langInfo.name;
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
 </body>
 </html>
