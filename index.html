@@ -1,4 +1,240 @@
 <!DOCTYPE html>
+<!-- ================= دکمه شناور دیپ‌سیک ================= -->
+<button id="aiFab" title="چت با دیپ‌سیک" style="
+  position: fixed; bottom: 20px; left: 20px; z-index: 99998;
+  width: 60px; height: 60px; border-radius: 50%;
+  background: linear-gradient(135deg,#4a90d9,#6fb1e0);
+  color: #fff; font-size: 26px; border: none;
+  box-shadow: 0 8px 25px rgba(74,144,217,.5);
+  cursor: pointer; transition: transform .2s;
+">🤖</button>
+
+<!-- ================= پنجره چت ================= -->
+<div id="aiChat" style="
+  position: fixed; bottom: 90px; left: 20px; z-index: 99998;
+  width: 360px; max-width: calc(100vw - 40px);
+  height: 500px; max-height: calc(100vh - 120px);
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,.3);
+  display: none; flex-direction: column; overflow: hidden;
+">
+  <!-- هدر -->
+  <div style="
+    background: linear-gradient(135deg,#4a90d9,#6fb1e0);
+    color: #fff; padding: 14px 18px;
+    display: flex; justify-content: space-between; align-items: center;
+  ">
+    <div style="display:flex; align-items:center; gap:10px;">
+      <span style="font-size:22px;">🤖</span>
+      <div>
+        <div style="font-weight:bold; font-size:15px;">دیپ‌سیک</div>
+        <div style="font-size:11px; opacity:.85;">دستیار هوشمند زردآلو</div>
+      </div>
+    </div>
+    <button id="aiClose" style="
+      background: rgba(255,255,255,.2); border: none; color: #fff;
+      width: 30px; height: 30px; border-radius: 50%; font-size: 16px; cursor: pointer;
+    ">×</button>
+  </div>
+
+  <!-- پیام‌ها -->
+  <div id="aiMessages" style="
+    flex: 1; overflow-y: auto; padding: 15px;
+    display: flex; flex-direction: column; gap: 10px;
+    background: var(--bg-soft);
+  ">
+    <div class="ai-msg bot" style="
+      background: var(--card); padding: 12px 15px; border-radius: 15px 15px 15px 4px;
+      max-width: 85%; font-size: 14px; align-self: flex-start;
+      box-shadow: 0 2px 8px rgba(0,0,0,.06); line-height: 1.7;
+    ">
+      سلام! 👋 من دیپ‌سیک هستم، دستیار هوشمند زردآلو.<br>
+      درباره‌ی سایت، ثبت کالا، خرید، پروفایل یا هر چیز دیگه‌ای بپرس!
+    </div>
+  </div>
+
+  <!-- ورودی -->
+  <form id="aiForm" style="
+    display: flex; gap: 8px; padding: 12px;
+    border-top: 1px solid var(--border); background: var(--card);
+  ">
+    <input id="aiInput" type="text" placeholder="سوالت رو بنویس..." style="
+      flex: 1; padding: 12px; border: 1px solid var(--border);
+      border-radius: 12px; outline: none; background: var(--bg);
+      color: var(--text); font-size: 14px;
+    ">
+    <button type="submit" style="
+      background: #4a90d9; color: #fff; border: none;
+      width: 46px; border-radius: 12px; font-size: 18px; cursor: pointer;
+    ">➤</button>
+  </form>
+</div>
+
+<style>
+  #aiFab:hover { transform: scale(1.08); }
+  .ai-msg.user {
+    background: #4a90d9 !important; color: #fff !important;
+    border-radius: 15px 15px 4px 15px !important;
+    align-self: flex-end !important;
+  }
+  .ai-msg.bot { align-self: flex-start; }
+  .ai-typing { display:flex; gap:4px; padding:14px 18px; }
+  .ai-typing span {
+    width:8px; height:8px; border-radius:50%; background:#999;
+    animation: aiBounce 1.4s infinite;
+  }
+  .ai-typing span:nth-child(2){ animation-delay:.2s; }
+  .ai-typing span:nth-child(3){ animation-delay:.4s; }
+  @keyframes aiBounce {
+    0%,60%,100%{ transform:translateY(0); opacity:.5; }
+    30%{ transform:translateY(-8px); opacity:1; }
+  }
+</style>
+
+<script>
+/* ================= چت‌بات دیپ‌سیک ================= */
+(function () {
+  const fab = document.getElementById('aiFab');
+  const chat = document.getElementById('aiChat');
+  const closeBtn = document.getElementById('aiClose');
+  const form = document.getElementById('aiForm');
+  const input = document.getElementById('aiInput');
+  const messages = document.getElementById('aiMessages');
+
+  // باز/بسته کردن
+  fab.addEventListener('click', () => {
+    const isOpen = chat.style.display === 'flex';
+    chat.style.display = isOpen ? 'none' : 'flex';
+    if (!isOpen) input.focus();
+  });
+  closeBtn.addEventListener('click', () => chat.style.display = 'none');
+
+  // افزودن پیام
+  function addMsg(text, who) {
+    const el = document.createElement('div');
+    el.className = 'ai-msg ' + who;
+    el.style.cssText = who === 'user'
+      ? 'background:#4a90d9; color:#fff; padding:12px 15px; border-radius:15px 15px 4px 15px; max-width:85%; font-size:14px; align-self:flex-end; line-height:1.7;'
+      : 'background:var(--card); padding:12px 15px; border-radius:15px 15px 15px 4px; max-width:85%; font-size:14px; align-self:flex-start; box-shadow:0 2px 8px rgba(0,0,0,.06); line-height:1.7;';
+    el.innerHTML = text;
+    messages.appendChild(el);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  // تایپینگ
+  function showTyping() {
+    const el = document.createElement('div');
+    el.className = 'ai-msg bot ai-typing-wrap';
+    el.innerHTML = '<div class="ai-typing"><span></span><span></span><span></span></div>';
+    messages.appendChild(el);
+    messages.scrollTop = messages.scrollHeight;
+    return el;
+  }
+
+  /* ============ مغز چت‌بات (پاسخ‌های از پیش تعریف‌شده) ============ */
+  const knowledge = [
+    {
+      keys: ['سلام', 'درود', 'hi', 'hello', 'وقت بخیر'],
+      answer: 'سلام! 👋 خوش اومدی به زردآلو. چطور می‌تونم کمکت کنم؟'
+    },
+    {
+      keys: ['زردآلو چیه', 'زردآلو چیست', 'درباره زردآلو', 'سایت چیه'],
+      answer: 'زردآلو یک <b>بازار آنلاین خرید و فروش کالا</b>ست که با شعار «با زردآلو خرید راحته!» طراحی شده. توی زردآلو می‌تونی کالا ثبت کنی، ببینی، به سبد اضافه کنی و خرید کنی. 🍑'
+    },
+    {
+      keys: ['ثبت کالا', 'چطور کالا بذارم', 'محصول ثبت', 'کالا اضافه'],
+      answer: 'برای ثبت کالا:<br>۱️⃣ از منو روی <b>«ثبت کالا»</b> بزن<br>۲️⃣ نام، توضیحات، قیمت، موجودی و دسته‌بندی رو پر کن<br>۳️⃣ اگه خواستی تصویر آپلود کن<br>۴️⃣ روی <b>«ثبت کالا»</b> کلیک کن ✅'
+    },
+    {
+      keys: ['خرید', 'چطور خرید کنم', 'سبد خرید', 'چطور بخرم'],
+      answer: 'برای خرید:<br>۱️⃣ برو به <b>«بازار»</b><br>۲️⃣ محصول مورد نظر رو پیدا کن<br>۳️⃣ روی <b>«افزودن به سبد»</b> بزن<br>۴️⃣ برو به <b>«سبد خرید»</b> و تعداد رو تنظیم کن<br>۵️⃣ روی <b>«نهایی کردن خرید»</b> بزن 🛒'
+    },
+    {
+      keys: ['پروفایل', 'اطلاعات من', 'نام من', 'آواتار', 'عکس پروفایل'],
+      answer: 'برای ساختن پروفایل:<br>۱️⃣ با ایمیل وارد شو<br>۲️⃣ نام، شماره تماس و شماره زردآلو رو وارد کن<br>۳️⃣ یه آواتار (ایموجی یا عکس) انتخاب کن<br>۴️⃣ روی <b>«ذخیره و ورود»</b> بزن 👤'
+    },
+    {
+      keys: ['میهمان', 'بدون ثبت نام', 'مهمان'],
+      answer: 'اگه عجله داری، روی <b>«ورود میهمان»</b> بزن. بدون ثبت‌نام وارد می‌شی و می‌تونی بازار رو ببینی و سبد بسازی. ولی برای ثبت کالا و خرید نهایی، باید با ایمیل وارد بشی. 🚪'
+    },
+    {
+      keys: ['ایمیل', 'ورود با ایمیل', 'ثبت نام', 'لاگین'],
+      answer: 'برای ورود با ایمیل:<br>۱️⃣ روی <b>«ورود»</b> بزن<br>۲️⃣ ایمیلت رو وارد کن<br>۳️⃣ روی <b>«ورود»</b> کلیک کن<br>حالا وارد شدی! ✅'
+    },
+    {
+      keys: ['پیام', 'پیام‌رسان', 'چت', 'ارتباط'],
+      answer: 'توی بخش <b>«پیام‌رسان»</b> می‌تونی پیام بفرستی و پیام‌های قبلی رو ببینی. 💬'
+    },
+    {
+      keys: ['گزارش', 'آمار', 'فروش من', 'چقدر فروختم'],
+      answer: 'بخش <b>«گزارش»</b> آمار فروشندگی تو رو نشون می‌ده: تعداد کالاها، ارزش کل موجودی و بازدید محصولات. 📊'
+    },
+    {
+      keys: ['مدیریت', 'حذف کالا', 'پاک کردن کالا'],
+      answer: 'توی بخش <b>«مدیریت»</b> می‌تونی کالاهای خودت رو ببینی و هر کدوم رو خواستی حذف کنی. ⚙️'
+    },
+    {
+      keys: ['تم', 'دارک', 'تاریک', 'روشن', 'شب'],
+      answer: 'با کلیک روی دکمه 🌙/☀️ بالای صفحه، می‌تونی بین حالت <b>روشن و تاریک</b> جابه‌جا بشی. 🌗'
+    },
+    {
+      keys: ['سازنده', 'چه کسی ساخت', 'عرفان', 'ریاحی'],
+      answer: 'زردآلو توسط <b>عرفان ریاحی</b> ساخته شده. 🧑🏻‍💻'
+    },
+    {
+      keys: ['تیزر', 'ویدیو', 'آپارات', 'ایتا'],
+      answer: 'تیزر اختصاصی زردآلو توی صفحه <b>«خانه»</b> قابل مشاهده‌ست (ویدیوی آپارات). 🎬'
+    },
+    {
+      keys: ['امنیت', 'داده', 'ذخیره', 'کجا ذخیره'],
+      answer: 'داده‌های زردآلو به‌صورت <b>محلی در مرورگر خودت</b> (localStorage) ذخیره می‌شن. یعنی فقط روی دستگاه خودت هستن و به هیچ سروری فرستاده نمی‌شن. 🔒'
+    },
+    {
+      keys: ['مشکل', 'کار نمی‌کنه', 'باگ', 'خطا'],
+      answer: 'اگه مشکلی داری:<br>۱️⃣ صفحه رو رفرش کن (F5)<br>۲️⃣ Cache مرورگر رو پاک کن<br>۳️⃣ اگه بازم مشکل بود، بگو دقیقاً چی کار نمی‌کنه تا راهنمایی‌ت کنم 🔧'
+    },
+    {
+      keys: ['ممنون', 'مرسی', 'تشکر', 'دستت درد نکنه'],
+      answer: 'خواهش می‌کنم! 😊 هر وقت سوالی داشتی، من همینجام.'
+    },
+    {
+      keys: ['خداحافظ', 'بای', 'فعلا'],
+      answer: 'خداحافظ! 👋 موفق باشی و خرید خوبی داشته باشی! 🍑'
+    },
+  ];
+
+  function findAnswer(text) {
+    const t = text.toLowerCase().trim();
+    for (const item of knowledge) {
+      for (const k of item.keys) {
+        if (t.includes(k.toLowerCase())) return item.answer;
+      }
+    }
+    return null;
+  }
+
+  function getBotReply(text) {
+    const ans = findAnswer(text);
+    if (ans) return ans;
+    return 'متأسفم، جواب این سوال رو نمی‌دونم. 🤔<br>ولی می‌تونی درباره‌ی این موضوع‌ها بپرسی:<br>• ثبت کالا<br>• خرید و سبد<br>• پروفایل<br>• ورود میهمان<br>• گزارش و مدیریت<br>• تم تاریک/روشن';
+  }
+
+  // ارسال پیام
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const text = input.value.trim();
+    if (!text) return;
+    addMsg(text, 'user');
+    input.value = '';
+    const typing = showTyping();
+    setTimeout(() => {
+      typing.remove();
+      const reply = getBotReply(text);
+      addMsg(reply, 'bot');
+    }, 700 + Math.random() * 500);
+  });
+})();
+</script>
 <html lang="fa" dir="rtl" data-theme="light">
 <head>
 <meta charset="UTF-8">
