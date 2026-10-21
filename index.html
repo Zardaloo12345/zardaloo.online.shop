@@ -1,619 +1,1261 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="fa" dir="rtl" data-theme="light">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>زردآلو | با زردآلو خرید راحته!</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: Tahoma, Arial, sans-serif; background: #fff; color: #222; }
-    button, input, textarea, select { font-family: inherit; }
-    button { cursor: pointer; }
-    .hidden { display: none !important; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>زردآلو | با زردآلو خرید راحته!</title>
+<meta name="description" content="زردآلو بازار آنلاین خرید و فروش کالا">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+/* ============================================================
+   ۰) متغیرها و تم
+   ============================================================ */
+:root {
+  --yellow: #ffd400;
+  --yellow-dark: #f0c500;
+  --bg: #fff;
+  --bg-soft: #fafafa;
+  --text: #222;
+  --text-soft: #666;
+  --border: #eee;
+  --card: #fff;
+  --danger: #e53935;
+  --success: #16852b;
+  --shadow: 0 5px 20px rgba(0,0,0,.06);
+  --radius: 18px;
+  --font: Tahoma, Arial, sans-serif;
+}
+[data-theme="dark"] {
+  --bg: #121212;
+  --bg-soft: #1c1c1c;
+  --text: #f0f0f0;
+  --text-soft: #aaa;
+  --border: #2a2a2a;
+  --card: #1e1e1e;
+  --shadow: 0 5px 20px rgba(0,0,0,.4);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  transition: background .3s, color .3s;
+  line-height: 1.7;
+}
+button, input, textarea, select { font-family: inherit; font-size: inherit; }
+button { cursor: pointer; border: none; }
+.hidden { display: none !important; }
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
 
-    /* ================= صفحه ورود (آبی کبود) ================= */
-    #welcomeScreen {
-      min-height: 100vh;
-      background: linear-gradient(135deg, #4a90d9, #6fb1e0, #8ec5e8);
-      box-shadow: inset 0 0 200px rgba(30, 80, 140, 0.35);
-      display: flex; align-items: center; justify-content: center; padding: 25px;
-    }
-    .welcome-box {
-      width: 100%; max-width: 650px; text-align: center; padding: 55px 30px;
-      border: 2px solid rgba(255,255,255,0.5); border-radius: 30px;
-      background: rgba(255,255,255,0.92); backdrop-filter: blur(10px);
-      box-shadow: 0 15px 45px rgba(0,0,0,0.25);
-    }
-    .welcome-logo, .main-logo, .brand-logo { background: #ffd400; border-radius: 50%; }
-    .welcome-logo { width: 105px; height: 105px; margin: 0 auto 25px; }
-    .welcome-box h1 { font-size: 38px; margin-bottom: 12px; }
-    .welcome-box h2 { font-size: 24px; margin-bottom: 35px; color: #555; }
-    .welcome-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-    .welcome-button {
-      border: 2px solid #ffd400; background: #ffd400; color: #222;
-      padding: 16px; border-radius: 15px; font-size: 17px; font-weight: bold; transition: 0.2s ease;
-    }
-    .welcome-button:hover { background: #222; color: #ffd400; border-color: #222; transform: translateY(-2px); }
-    #emailForm { margin-top: 20px; display: none; }
-    #emailForm input {
-      width: 100%; padding: 14px; border-radius: 13px; border: 1px solid #ccc;
-      font-size: 16px; margin-bottom: 12px; outline: none; text-align: center;
-    }
-    #emailForm input:focus { border-color: #4a90d9; }
-    #emailError { color: #d32f2f; font-size: 14px; margin-top: 6px; min-height: 18px; }
-    #emailSuccess { color: #16852b; font-size: 14px; margin-top: 6px; min-height: 18px; }
+/* ============================================================
+   ۱) توست (اعلان)
+   ============================================================ */
+#toastBox {
+  position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+  z-index: 99999; display: flex; flex-direction: column; gap: 10px;
+  pointer-events: none; width: 90%; max-width: 420px;
+}
+.toast {
+  background: #222; color: #fff; padding: 14px 20px; border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0,0,0,.25); font-size: 14px;
+  animation: toastIn .3s ease; pointer-events: auto; border-right: 5px solid var(--yellow);
+}
+.toast.success { border-color: var(--success); }
+.toast.error { border-color: var(--danger); }
+@keyframes toastIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* ================= ساخت پروفایل ================= */
-    #profileSetup { min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; background: #fff; }
-    .profile-box { width: 100%; max-width: 480px; background: #fff; border: 2px solid #ffd400; border-radius: 24px; padding: 30px; box-shadow: 0 10px 35px rgba(0,0,0,.08); text-align: center; }
-    .main-logo { width: 90px; height: 90px; margin: 0 auto 18px; }
-    .profile-box h1 { margin-bottom: 8px; }
-    .profile-box > p { color: #777; margin-bottom: 22px; }
-    .profile-preview { width: 115px; height: 115px; border-radius: 50%; border: 4px solid #ffd400; background: #fff7b0; margin: 0 auto 18px; overflow: hidden; display: flex; justify-content: center; align-items: center; font-size: 50px; }
-    .profile-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .avatar-options { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 15px; }
-    .avatar-option { height: 45px; border: none; border-radius: 12px; background: #fff3a0; font-size: 24px; }
-    .avatar-option:hover { background: #ffd400; }
-    .image-picker { display: block; background: #f2f2f2; border-radius: 12px; padding: 12px; margin-bottom: 18px; cursor: pointer; }
-    .field { margin-bottom: 15px; text-align: right; }
-    .field label { display: block; margin-bottom: 7px; font-weight: bold; }
-    .field input, .field textarea, .field select { width: 100%; border: 1px solid #ddd; border-radius: 12px; padding: 13px; outline: none; background: #fff; }
-    .field input:focus, .field textarea:focus, .field select:focus { border-color: #ffd400; }
-    .yellow-button { width: 100%; border: none; border-radius: 13px; background: #ffd400; padding: 14px; font-size: 16px; font-weight: bold; }
-    .yellow-button:hover { background: #f0c500; }
-    .yellow-button:disabled { opacity: 0.6; cursor: not-allowed; }
-    .red-button { border: none; border-radius: 10px; padding: 10px 14px; background: #e53935; color: white; }
+/* ============================================================
+   ۲) صفحه ورود
+   ============================================================ */
+#welcomeScreen {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  padding: 25px;
+  background: linear-gradient(135deg, #4a90d9, #6fb1e0, #8ec5e8);
+  box-shadow: inset 0 0 200px rgba(30,80,140,.35);
+}
+.welcome-box {
+  width: 100%; max-width: 650px; text-align: center; padding: 55px 30px;
+  border: 2px solid rgba(255,255,255,.5); border-radius: 30px;
+  background: rgba(255,255,255,.94); backdrop-filter: blur(10px);
+  box-shadow: 0 15px 45px rgba(0,0,0,.25);
+}
+.welcome-logo { width: 105px; height: 105px; border-radius: 50%; background: var(--yellow); margin: 0 auto 25px; }
+.welcome-box h1 { font-size: 38px; margin-bottom: 12px; }
+.welcome-box h2 { font-size: 24px; margin-bottom: 35px; color: #555; font-weight: normal; }
+.welcome-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.welcome-button {
+  border: 2px solid var(--yellow); background: var(--yellow); color: #222;
+  padding: 16px; border-radius: 15px; font-size: 17px; font-weight: bold; transition: .2s;
+}
+.welcome-button:hover { background: #222; color: var(--yellow); border-color: #222; transform: translateY(-2px); }
+#emailForm { margin-top: 20px; display: none; }
+#emailForm input {
+  width: 100%; padding: 14px; border-radius: 13px; border: 1px solid #ccc;
+  font-size: 16px; margin-bottom: 12px; outline: none; text-align: center;
+}
+#emailForm input:focus { border-color: #4a90d9; }
+#emailError { color: var(--danger); font-size: 14px; min-height: 18px; }
+#emailSuccess { color: var(--success); font-size: 14px; min-height: 18px; }
 
-    /* ================= اپ اصلی ================= */
-    #app { min-height: 100vh; }
-    header { position: sticky; top: 0; z-index: 100; background: white; border-bottom: 1px solid #eee; }
-    .header-inner { max-width: 1200px; margin: auto; padding: 10px 18px; display: flex; justify-content: space-between; align-items: center; }
-    .brand { display: flex; align-items: center; gap: 10px; font-size: 21px; font-weight: bold; }
-    .brand-logo { width: 43px; height: 43px; }
-    .header-avatar { width: 52px; height: 52px; border-radius: 50%; border: 3px solid #ffd400; background: #fff7b0; overflow: hidden; display: flex; justify-content: center; align-items: center; font-size: 25px; }
-    nav { max-width: 1200px; margin: auto; padding: 10px 15px; display: flex; gap: 8px; overflow-x: auto; }
-    nav button { border: none; background: #f3f3f3; padding: 10px 15px; border-radius: 12px; white-space: nowrap; }
-    nav button:hover { background: #ffd400; }
-    main { max-width: 1200px; margin: auto; padding: 25px 15px 50px; }
-    .page { display: none; }
-    .page.active { display: block; }
-    .page-title { margin-bottom: 20px; }
-    .card { background: white; border: 1px solid #eee; border-radius: 18px; padding: 20px; margin-bottom: 18px; box-shadow: 0 5px 20px rgba(0,0,0,.04); }
-    .video-box { max-width: 720px; margin: 0 auto 20px; border-radius: 18px; overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.12); background: #000; }
-    .video-box iframe { display: block; border: none; width: 100%; height: 360px; }
-    .home-profile { display: flex; align-items: center; gap: 22px; }
-    .home-avatar { width: 115px; height: 115px; border-radius: 50%; border: 4px solid #ffd400; background: #fff7b0; overflow: hidden; display: flex; justify-content: center; align-items: center; font-size: 50px; flex-shrink: 0; }
-    .profile-info p { margin-bottom: 10px; }
-    .filters { display: grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap: 10px; }
-    .filters input, .filters select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 12px; }
-    .products-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(230px,1fr)); gap: 15px; }
-    .product-card { border: 1px solid #eee; border-radius: 18px; padding: 17px; background: white; }
-    .product-card h3 { margin-bottom: 10px; }
-    .product-price { font-weight: bold; margin: 10px 0; }
-    .product-card button { margin-top: 10px; }
-    .cart-item { border-bottom: 1px solid #eee; padding: 15px 0; }
-    .cart-summary { background: #fff8b5; border-radius: 16px; padding: 18px; margin-top: 20px; line-height: 2; }
-    .message-item { padding: 14px; border-radius: 12px; background: #f4f4f4; margin-bottom: 10px; }
-    footer { border-top: 1px solid #eee; text-align: center; padding: 25px; color: #777; }
-    #supabaseStatus { margin-top: 15px; font-size: 14px; min-height: 20px; }
-    .loading { text-align: center; color: #777; padding: 15px; }
-    @media (max-width: 600px) {
-      .avatar-options { grid-template-columns: repeat(4,1fr); }
-      .home-profile { flex-direction: column; text-align: center; }
-      .profile-box { padding: 22px; }
-      .welcome-buttons { grid-template-columns: 1fr; }
-      .welcome-box h1 { font-size: 30px; }
-      .video-box iframe { height: 220px; }
-    }
-  </style>
+/* ============================================================
+   ۳) پروفایل
+   ============================================================ */
+#profileSetup {
+  min-height: 100vh; display: flex; justify-content: center; align-items: center;
+  padding: 20px; background: var(--bg);
+}
+.profile-box {
+  width: 100%; max-width: 480px; background: var(--card);
+  border: 2px solid var(--yellow); border-radius: 24px; padding: 30px;
+  box-shadow: var(--shadow); text-align: center;
+}
+.profile-preview {
+  width: 115px; height: 115px; border-radius: 50%; border: 4px solid var(--yellow);
+  background: #fff7b0; margin: 0 auto 18px; overflow: hidden;
+  display: flex; justify-content: center; align-items: center; font-size: 50px;
+}
+.profile-preview img { width: 100%; height: 100%; object-fit: cover; }
+.avatar-options { display: grid; grid-template-columns: repeat(7,1fr); gap: 6px; margin-bottom: 15px; }
+.avatar-option { height: 45px; border-radius: 12px; background: #fff3a0; font-size: 24px; }
+.avatar-option:hover { background: var(--yellow); }
+.image-picker { display: block; background: var(--bg-soft); border-radius: 12px; padding: 12px; margin-bottom: 18px; cursor: pointer; }
+.field { margin-bottom: 15px; text-align: right; }
+.field label { display: block; margin-bottom: 7px; font-weight: bold; font-size: 14px; }
+.field input, .field textarea, .field select {
+  width: 100%; border: 1px solid var(--border); border-radius: 12px; padding: 13px;
+  outline: none; background: var(--card); color: var(--text);
+}
+.field input:focus, .field textarea:focus, .field select:focus { border-color: var(--yellow); }
+.field textarea { min-height: 90px; resize: vertical; }
+
+/* ============================================================
+   ۴) دکمه‌ها
+   ============================================================ */
+.yellow-button {
+  width: 100%; border-radius: 13px; background: var(--yellow); color: #222;
+  padding: 14px; font-size: 16px; font-weight: bold; transition: .2s;
+}
+.yellow-button:hover { background: var(--yellow-dark); }
+.yellow-button:disabled { opacity: .6; cursor: not-allowed; }
+.red-button { border-radius: 10px; padding: 10px 14px; background: var(--danger); color: #fff; }
+.red-button:hover { opacity: .9; }
+.ghost-button {
+  background: transparent; border: 1px solid var(--border); color: var(--text);
+  padding: 10px 16px; border-radius: 12px;
+}
+.ghost-button:hover { border-color: var(--yellow); }
+
+/* ============================================================
+   ۵) هدر و ناوبری
+   ============================================================ */
+#app { min-height: 100vh; }
+header {
+  position: sticky; top: 0; z-index: 100; background: var(--card);
+  border-bottom: 1px solid var(--border);
+}
+.header-inner {
+  max-width: 1200px; margin: auto; padding: 10px 18px;
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+}
+.brand { display: flex; align-items: center; gap: 10px; font-size: 21px; font-weight: bold; }
+.brand-logo { width: 43px; height: 43px; border-radius: 50%; background: var(--yellow); }
+.header-actions { display: flex; align-items: center; gap: 10px; }
+.header-avatar {
+  width: 52px; height: 52px; border-radius: 50%; border: 3px solid var(--yellow);
+  background: #fff7b0; overflow: hidden; display: flex; justify-content: center;
+  align-items: center; font-size: 25px; cursor: pointer;
+}
+.icon-btn {
+  width: 42px; height: 42px; border-radius: 12px; background: var(--bg-soft);
+  display: flex; align-items: center; justify-content: center; font-size: 20px;
+}
+.icon-btn:hover { background: var(--yellow); }
+nav {
+  max-width: 1200px; margin: auto; padding: 10px 15px;
+  display: flex; gap: 8px; overflow-x: auto;
+}
+nav button {
+  border: none; background: var(--bg-soft); color: var(--text);
+  padding: 10px 15px; border-radius: 12px; white-space: nowrap; transition: .2s;
+}
+nav button:hover, nav button.active { background: var(--yellow); color: #222; }
+
+/* ============================================================
+   ۶) بدنه اصلی
+   ============================================================ */
+main { max-width: 1200px; margin: auto; padding: 25px 15px 50px; min-height: 60vh; }
+.page { display: none; }
+.page.active { display: block; animation: fadeIn .3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.page-title { margin-bottom: 20px; font-size: 22px; }
+.card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px; margin-bottom: 18px;
+  box-shadow: var(--shadow);
+}
+.video-box {
+  max-width: 720px; margin: 0 auto 20px; border-radius: var(--radius);
+  overflow: hidden; box-shadow: var(--shadow); background: #000;
+}
+.video-box iframe { display: block; border: none; width: 100%; height: 360px; }
+
+/* ============================================================
+   ۷) پروفایل خانه
+   ============================================================ */
+.home-profile { display: flex; align-items: center; gap: 22px; }
+.home-avatar {
+  width: 115px; height: 115px; border-radius: 50%; border: 4px solid var(--yellow);
+  background: #fff7b0; overflow: hidden; display: flex; justify-content: center;
+  align-items: center; font-size: 50px; flex-shrink: 0;
+}
+.home-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.profile-info p { margin-bottom: 10px; }
+
+/* ============================================================
+   ۸) فیلترها و محصولات
+   ============================================================ */
+.filters { display: grid; grid-template-columns: repeat(auto-fit,minmax(160px,1fr)); gap: 10px; }
+.filters input, .filters select {
+  width: 100%; padding: 12px; border: 1px solid var(--border);
+  border-radius: 12px; background: var(--card); color: var(--text);
+}
+.products-grid {
+  display: grid; grid-template-columns: repeat(auto-fill,minmax(230px,1fr)); gap: 15px;
+}
+.product-card {
+  border: 1px solid var(--border); border-radius: var(--radius); padding: 15px;
+  background: var(--card); transition: .2s; position: relative; overflow: hidden;
+}
+.product-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+.product-image {
+  width: 100%; height: 160px; border-radius: 12px; overflow: hidden;
+  background: var(--bg-soft); display: flex; align-items: center; justify-content: center;
+  font-size: 40px; margin-bottom: 12px;
+}
+.product-image img { width: 100%; height: 100%; object-fit: cover; }
+.product-card h3 { margin-bottom: 8px; font-size: 16px; }
+.product-desc { font-size: 13px; color: var(--text-soft); margin-bottom: 8px; }
+.product-price { font-weight: bold; margin: 8px 0; color: var(--yellow-dark); }
+.product-meta { font-size: 12px; color: var(--text-soft); display: flex; justify-content: space-between; }
+.product-card .yellow-button { margin-top: 10px; padding: 10px; font-size: 14px; }
+
+/* ============================================================
+   ۹) سبد خرید
+   ============================================================ */
+.cart-item {
+  border-bottom: 1px solid var(--border); padding: 15px 0;
+  display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.cart-item-info { flex: 1; min-width: 180px; }
+.qty-controls { display: flex; align-items: center; gap: 6px; }
+.qty-btn {
+  width: 32px; height: 32px; border-radius: 8px; background: var(--bg-soft);
+  font-size: 18px; font-weight: bold;
+}
+.qty-btn:hover { background: var(--yellow); }
+.cart-summary {
+  background: #fff8b5; color: #222; border-radius: 16px; padding: 18px;
+  margin-top: 20px; line-height: 2;
+}
+[data-theme="dark"] .cart-summary { background: #4a4300; color: #fff; }
+
+/* ============================================================
+   ۱۰) پیام‌رسان
+   ============================================================ */
+.message-item {
+  padding: 14px; border-radius: 12px; background: var(--bg-soft);
+  margin-bottom: 10px; font-size: 14px;
+}
+.message-form { display: flex; gap: 8px; margin-top: 15px; }
+.message-form input {
+  flex: 1; padding: 12px; border: 1px solid var(--border); border-radius: 12px;
+  background: var(--card); color: var(--text);
+}
+
+/* ============================================================
+   ۱۱) آمار و مدیریت
+   ============================================================ */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(150px,1fr)); gap: 12px; }
+.stat-card {
+  background: var(--bg-soft); border-radius: 14px; padding: 18px; text-align: center;
+}
+.stat-card .stat-num { font-size: 26px; font-weight: bold; color: var(--yellow-dark); }
+.stat-card .stat-label { font-size: 13px; color: var(--text-soft); }
+.manage-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px; border-bottom: 1px solid var(--border); gap: 10px; flex-wrap: wrap;
+}
+
+/* ============================================================
+   ۱۲) فوتر
+   ============================================================ */
+footer { border-top: 1px solid var(--border); text-align: center; padding: 25px; color: var(--text-soft); }
+
+/* ============================================================
+   ۱۳) ریسپانسیو
+   ============================================================ */
+@media (max-width: 600px) {
+  .avatar-options { grid-template-columns: repeat(4,1fr); }
+  .home-profile { flex-direction: column; text-align: center; }
+  .profile-box { padding: 22px; }
+  .welcome-buttons { grid-template-columns: 1fr; }
+  .welcome-box h1 { font-size: 30px; }
+  .video-box iframe { height: 220px; }
+  .welcome-box { padding: 40px 20px; }
+}
+</style>
 </head>
 <body>
 
-  <!-- ================= صفحه ورود ================= -->
-  <section id="welcomeScreen">
-    <div class="welcome-box">
-      <div class="welcome-logo"></div>
-      <h1>زردآلو</h1>
-      <h2>با زردآلو خرید راحته!</h2>
-      <div class="welcome-buttons" id="welcomeButtons">
-        <button type="button" class="welcome-button" id="guestBtn">ورود میهمان</button>
-        <button type="button" class="welcome-button" id="loginBtn">ورود</button>
-      </div>
-      <form id="emailForm">
-        <input type="email" id="emailInput" placeholder="ایمیل خود را وارد کنید" required>
-        <button type="submit" class="yellow-button">ارسال لینک ورود</button>
-        <div id="emailError"></div>
-        <div id="emailSuccess"></div>
-      </form>
-    </div>
-  </section>
+<!-- ================== توست ================== -->
+<div id="toastBox"></div>
 
-  <!-- ================= ساخت پروفایل ================= -->
-  <section id="profileSetup" class="hidden">
-    <div class="profile-box">
-      <div class="main-logo"></div>
-      <h1>پروفایل خودت را بساز</h1>
-      <p>برای ورود به زردآلو اطلاعاتت را کامل کن</p>
-      <div class="profile-preview" id="avatarPreview">👤</div>
-      <div class="avatar-options">
-        <button type="button" class="avatar-option" data-avatar="👤">👤</button>
-        <button type="button" class="avatar-option" data-avatar="🧑">🧑</button>
-        <button type="button" class="avatar-option" data-avatar="👩">👩</button>
-        <button type="button" class="avatar-option" data-avatar="🧔">🧔</button>
-        <button type="button" class="avatar-option" data-avatar="👨‍🦱">👨‍🦱</button>
-        <button type="button" class="avatar-option" data-avatar="👩‍🦰">👩‍🦰</button>
-        <button type="button" class="avatar-option" data-avatar="🧑‍🦳">🧑‍🦳</button>
-      </div>
-      <label class="image-picker">
-        انتخاب تصویر پروفایل
-        <input type="file" id="avatarFile" accept="image/*" hidden>
-      </label>
-      <div class="field">
-        <label for="fullName">نام و نام خانوادگی</label>
-        <input type="text" id="fullName" placeholder="مثلاً عرفان ریاحی">
-      </div>
-      <div class="field">
-        <label for="phone">شماره تماس</label>
-        <input type="tel" id="phone" placeholder="09xxxxxxxxx">
-      </div>
-      <div class="field">
-        <label for="zardalooNumber">شماره زردآلو</label>
-        <input type="text" id="zardalooNumber" placeholder="شماره اختصاصی زردآلو">
-      </div>
-      <button type="button" class="yellow-button" id="saveProfileBtn">ذخیره و ورود</button>
-      <div id="profileStatus" style="margin-top:10px; font-size:14px;"></div>
+<!-- ================== صفحه ورود ================== -->
+<section id="welcomeScreen">
+  <div class="welcome-box">
+    <div class="welcome-logo"></div>
+    <h1>زردآلو</h1>
+    <h2>با زردآلو خرید راحته!</h2>
+    <div class="welcome-buttons" id="welcomeButtons">
+      <button type="button" class="welcome-button" id="guestBtn">ورود میهمان</button>
+      <button type="button" class="welcome-button" id="loginBtn">ورود</button>
     </div>
-  </section>
+    <form id="emailForm">
+      <input type="email" id="emailInput" placeholder="ایمیل خود را وارد کنید" required>
+      <button type="submit" class="yellow-button">ارسال لینک ورود</button>
+      <div id="emailError"></div>
+      <div id="emailSuccess"></div>
+    </form>
+  </div>
+</section>
 
-  <!-- ================= اپ اصلی ================= -->
-  <div id="app" class="hidden">
-    <header>
-      <div class="header-inner">
-        <div class="brand"><div class="brand-logo"></div><span>زردآلو</span></div>
+<!-- ================== ساخت پروفایل ================== -->
+<section id="profileSetup" class="hidden">
+  <div class="profile-box">
+    <h1>پروفایل خودت را بساز</h1>
+    <p style="color:var(--text-soft); margin-bottom:18px;">اطلاعاتت را کامل کن</p>
+    <div class="profile-preview" id="avatarPreview">👤</div>
+    <div class="avatar-options">
+      <button type="button" class="avatar-option" data-avatar="👤">👤</button>
+      <button type="button" class="avatar-option" data-avatar="🧑">🧑</button>
+      <button type="button" class="avatar-option" data-avatar="👩">👩</button>
+      <button type="button" class="avatar-option" data-avatar="🧔">🧔</button>
+      <button type="button" class="avatar-option" data-avatar="👨‍🦱">👨‍🦱</button>
+      <button type="button" class="avatar-option" data-avatar="👩‍🦰">👩‍🦰</button>
+      <button type="button" class="avatar-option" data-avatar="🧑‍🦳">🧑‍🦳</button>
+    </div>
+    <label class="image-picker">
+      انتخاب تصویر پروفایل
+      <input type="file" id="avatarFile" accept="image/*" hidden>
+    </label>
+    <div class="field"><label>نام و نام خانوادگی</label><input type="text" id="fullName" placeholder="مثلاً عرفان ریاحی"></div>
+    <div class="field"><label>شماره تماس</label><input type="tel" id="phone" placeholder="09xxxxxxxxx"></div>
+    <div class="field"><label>شماره زردآلو</label><input type="text" id="zardalooNumber" placeholder="شماره اختصاصی"></div>
+    <button type="button" class="yellow-button" id="saveProfileBtn">ذخیره و ورود</button>
+    <div id="profileStatus" style="margin-top:10px; font-size:14px;"></div>
+  </div>
+</section>
+
+<!-- ================== اپ ================== -->
+<div id="app" class="hidden">
+  <header>
+    <div class="header-inner">
+      <div class="brand"><div class="brand-logo"></div><span>زردآلو</span></div>
+      <div class="header-actions">
+        <button type="button" class="icon-btn" id="themeToggle" title="تم">🌙</button>
+        <button type="button" class="icon-btn" id="logoutBtn" title="خروج">🚪</button>
         <div class="header-avatar" id="headerAvatar">👤</div>
       </div>
-    </header>
-    <nav>
-      <button type="button" data-page="homePage">خانه</button>
-      <button type="button" data-page="marketPage">بازار زردآلو</button>
-      <button type="button" data-page="cartPage">سبد خرید</button>
-      <button type="button" data-page="messengerPage">پیام‌رسان</button>
-      <button type="button" data-page="reportPage">گزارش فروشنده</button>
-      <button type="button" data-page="managePage">مدیریت</button>
-      <button type="button" data-page="addProductPage">ثبت کالا</button>
-      <button type="button" data-page="aboutPage">درباره زردآلو</button>
-    </nav>
-    <main>
-      <!-- خانه -->
-      <section class="page active" id="homePage">
-        <h2 class="page-title">خانه</h2>
-        <div class="video-box">
-          <iframe src="https://www.aparat.com/video/video/embed/videohash/ggl6u79/vt/frame" allowfullscreen="true" width="100%" height="360" frameborder="0"></iframe>
+    </div>
+  </header>
+
+  <nav id="mainNav">
+    <button type="button" data-page="homePage" class="active">خانه</button>
+    <button type="button" data-page="marketPage">بازار</button>
+    <button type="button" data-page="addProductPage">ثبت کالا</button>
+    <button type="button" data-page="cartPage">سبد خرید</button>
+    <button type="button" data-page="messengerPage">پیام‌رسان</button>
+    <button type="button" data-page="reportPage">گزارش فروشنده</button>
+    <button type="button" data-page="managePage">مدیریت</button>
+    <button type="button" data-page="aboutPage">درباره</button>
+  </nav>
+
+  <main>
+    <!-- خانه -->
+    <section class="page active" id="homePage">
+      <h2 class="page-title">خانه</h2>
+      <div class="video-box">
+        <iframe src="https://www.aparat.com/video/video/embed/videohash/ggl6u79/vt/frame" allowfullscreen width="100%" height="360" frameborder="0"></iframe>
+      </div>
+      <div class="card home-profile">
+        <div class="home-avatar" id="homeAvatar">👤</div>
+        <div class="profile-info">
+          <p><strong>نام:</strong> <span id="homeName">---</span></p>
+          <p><strong>شماره تماس:</strong> <span id="homePhone">---</span></p>
+          <p><strong>شماره زردآلو:</strong> <span id="homeZardaloo">---</span></p>
         </div>
-        <div class="card home-profile">
-          <div class="home-avatar" id="homeAvatar">👤</div>
-          <div class="profile-info">
-            <p><strong>نام:</strong> <span id="homeName">---</span></p>
-            <p><strong>شماره تماس:</strong> <span id="homePhone">---</span></p>
-            <p><strong>شماره زردآلو:</strong> <span id="homeZardaloo">---</span></p>
-          </div>
+      </div>
+    </section>
+
+    <!-- بازار -->
+    <section class="page" id="marketPage">
+      <h2 class="page-title">بازار زردآلو</h2>
+      <div class="card">
+        <div class="filters">
+          <input type="text" id="searchInput" placeholder="جستجوی کالا...">
+          <select id="categoryFilter">
+            <option value="">همه دسته‌ها</option>
+            <option value="digital">دیجیتال</option>
+            <option value="clothing">پوشاک</option>
+            <option value="home">خانه و آشپزخانه</option>
+            <option value="other">سایر</option>
+          </select>
+          <select id="sortFilter">
+            <option value="newest">جدیدترین</option>
+            <option value="cheap">ارزان‌ترین</option>
+            <option value="expensive">گران‌ترین</option>
+          </select>
         </div>
-      </section>
+      </div>
+      <div class="products-grid" id="productsGrid"><div class="loading">در حال بارگذاری...</div></div>
+    </section>
 
-      <!-- بازار -->
-      <section class="page" id="marketPage">
-        <h2 class="page-title">بازار زردآلو</h2>
-        <div class="card">
-          <div class="filters">
-            <input type="text" id="searchInput" placeholder="جستجوی کالا...">
-            <select id="categoryFilter">
-              <option value="">همه دسته‌ها</option>
-              <option value="digital">دیجیتال</option>
-              <option value="clothing">پوشاک</option>
-              <option value="home">خانه و آشپزخانه</option>
-            </select>
-          </div>
+    <!-- ثبت کالا -->
+    <section class="page" id="addProductPage">
+      <h2 class="page-title">ثبت کالای جدید</h2>
+      <div class="card">
+        <div class="field"><label>نام کالا</label><input type="text" id="productTitle" placeholder="مثلاً گوشی موبایل"></div>
+        <div class="field"><label>توضیحات</label><textarea id="productDesc" placeholder="توضیح کوتاه..."></textarea></div>
+        <div class="field"><label>قیمت (تومان)</label><input type="number" id="productPrice" placeholder="1500000"></div>
+        <div class="field"><label>تعداد موجودی</label><input type="number" id="productStock" value="1" min="1"></div>
+        <div class="field"><label>دسته‌بندی</label>
+          <select id="productCategory">
+            <option value="digital">دیجیتال</option>
+            <option value="clothing">پوشاک</option>
+            <option value="home">خانه و آشپزخانه</option>
+            <option value="other">سایر</option>
+          </select>
         </div>
-        <div class="products-grid" id="productsGrid"><div class="loading">در حال بارگذاری...</div></div>
-      </section>
+        <div class="field"><label>تصویر کالا (اختیاری)</label><input type="file" id="productImage" accept="image/*"></div>
+        <button type="button" class="yellow-button" id="submitProductBtn">ثبت کالا</button>
+        <div id="supabaseStatus" style="margin-top:12px; font-size:14px;"></div>
+      </div>
+    </section>
 
-      <!-- سبد خرید -->
-      <section class="page" id="cartPage">
-        <h2 class="page-title">سبد خرید</h2>
-        <div class="card" id="cartItems"><p>سبد خرید خالی است.</p></div>
-        <div class="cart-summary" id="cartSummary" style="display:none;"></div>
-      </section>
+    <!-- سبد خرید -->
+    <section class="page" id="cartPage">
+      <h2 class="page-title">سبد خرید</h2>
+      <div class="card" id="cartItems"><p>سبد خرید خالی است.</p></div>
+      <div class="cart-summary" id="cartSummary" style="display:none;"></div>
+      <button type="button" class="yellow-button" id="checkoutBtn" style="display:none; margin-top:15px;">نهایی کردن خرید</button>
+    </section>
 
-      <!-- پیام‌رسان -->
-      <section class="page" id="messengerPage">
-        <h2 class="page-title">پیام‌رسان</h2>
-        <div class="card"><div class="message-item">پیامی وجود ندارد.</div></div>
-      </section>
+    <!-- پیام‌رسان -->
+    <section class="page" id="messengerPage">
+      <h2 class="page-title">پیام‌رسان</h2>
+      <div class="card">
+        <div id="messagesList"><div class="message-item">پیامی وجود ندارد.</div></div>
+        <form class="message-form" id="messageForm">
+          <input type="text" id="messageInput" placeholder="پیام خود را بنویسید...">
+          <button type="submit" class="yellow-button" style="width:auto; padding:12px 20px;">ارسال</button>
+        </form>
+      </div>
+    </section>
 
-      <!-- گزارش فروشنده -->
-      <section class="page" id="reportPage">
-        <h2 class="page-title">گزارش فروشنده</h2>
-        <div class="card"><p>آماری برای نمایش وجود ندارد.</p></div>
-      </section>
-
-      <!-- مدیریت -->
-      <section class="page" id="managePage">
-        <h2 class="page-title">مدیریت</h2>
-        <div class="card"><p>اینجا می‌توانید کالاها و حساب کاربری خود را مدیریت کنید.</p></div>
-      </section>
-
-      <!-- ثبت کالا (Supabase) -->
-      <section class="page" id="addProductPage">
-        <h2 class="page-title">ثبت کالای جدید</h2>
-        <div class="card">
-          <div class="field">
-            <label for="productTitle">نام کالا</label>
-            <input type="text" id="productTitle" placeholder="مثلاً گوشی موبایل">
-          </div>
-          <div class="field">
-            <label for="productPrice">قیمت (تومان)</label>
-            <input type="number" id="productPrice" placeholder="1500000">
-          </div>
-          <div class="field">
-            <label for="productCategory">دسته‌بندی</label>
-            <select id="productCategory">
-              <option value="digital">دیجیتال</option>
-              <option value="clothing">پوشاک</option>
-              <option value="home">خانه و آشپزخانه</option>
-            </select>
-          </div>
-          <button type="button" class="yellow-button" id="submitProductBtn">ثبت کالا در Supabase</button>
-          <div id="supabaseStatus"></div>
+    <!-- گزارش فروشنده -->
+    <section class="page" id="reportPage">
+      <h2 class="page-title">گزارش فروشنده</h2>
+      <div class="card">
+        <div class="stats-grid" id="statsGrid">
+          <div class="stat-card"><div class="stat-num" id="statProducts">0</div><div class="stat-label">تعداد کالا</div></div>
+          <div class="stat-card"><div class="stat-num" id="statValue">0</div><div class="stat-label">ارزش کل (تومان)</div></div>
+          <div class="stat-card"><div class="stat-num" id="statViews">0</div><div class="stat-label">بازدید کل</div></div>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <!-- درباره -->
-      <section class="page" id="aboutPage">
-        <h2 class="page-title">درباره زردآلو</h2>
-        <div class="card">
-          <p>🧑🏻‍💻 سازنده: عرفان ریاحی</p>
-          <p>زردآلو یک بازار آنلاین برای خرید و فروش کالا است.</p>
-          <p><strong>با تشکر از:</strong> جناب آقای شهاب‌الدین ریاحی، جناب دکتر عباس امیدی، جناب آقای زارعی، جناب آقای کوشان طلائی، سرکار خانم ملیحه همت‌گیر، جناب آقای سپهر میر قادری، جناب آقای سید ابوالفضل صمصام شریعت، جناب آقای محمد پارسا آیتی، جناب آقای محمد طاها نیرومند، جناب آقای قاسمی، جناب آقای کیان عسگری، جناب آقای مانی شیروی.</p>
-        </div>
-      </section>
-    </main>
-    <footer>با زردآلو خرید راحته! 🍑</footer>
-  </div>
+    <!-- مدیریت -->
+    <section class="page" id="managePage">
+      <h2 class="page-title">مدیریت کالاها</h2>
+      <div class="card" id="manageList"><p>کالایی برای مدیریت وجود ندارد.</p></div>
+    </section>
 
-  <script>
-    // ================= تنظیمات Supabase =================
-    const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    <!-- درباره -->
+    <section class="page" id="aboutPage">
+      <h2 class="page-title">درباره زردآلو</h2>
+      <div class="card">
+        <p>🧑🏻‍💻 سازنده: عرفان ریاحی</p>
+        <p>زردآلو یک بازار آنلاین برای خرید و فروش کالا است.</p>
+        <p><strong>با تشکر از:</strong> جناب آقای شهاب‌الدین ریاحی، جناب دکتر عباس امیدی، جناب آقای زارعی، جناب آقای کوشان طلائی، سرکار خانم ملیحه همت‌گیر، جناب آقای سپهر میر قادری، جناب آقای سید ابوالفضل صمصام شریعت، جناب آقای محمد پارسا آیتی، جناب آقای محمد طاها نیرومند، جناب آقای قاسمی، جناب آقای کیان عسگری، جناب آقای مانی شیروی.</p>
+      </div>
+    </section>
+  </main>
 
-    /* ================= عناصر ================= */
-    const welcomeScreen = document.getElementById('welcomeScreen');
-    const profileSetup = document.getElementById('profileSetup');
-    const app = document.getElementById('app');
-    const welcomeButtons = document.getElementById('welcomeButtons');
-    const guestBtn = document.getElementById('guestBtn');
-    const loginBtn = document.getElementById('loginBtn');
-    const emailForm = document.getElementById('emailForm');
-    const emailInput = document.getElementById('emailInput');
-    const emailError = document.getElementById('emailError');
-    const emailSuccess = document.getElementById('emailSuccess');
+  <footer>با زردآلو خرید راحته! 🍑</footer>
+</div>
 
-    let currentUser = null;
-    let isGuest = false;
+<script>
+/* ============================================================
+   تنظیمات Supabase
+   ============================================================ */
+const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+let supabase = null;
+try {
+  if/* ============================================================
+   تنظیمات Supabase
+   ============================================================ */
+const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+let supabase = null;
+try {
+  if (window.supabase && SUPABASE_URL && !SUPABASE_URL.includes('YOUR_')) {
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    console.log('✅ Supabase connected');
+  } else {
+    console.warn('⚠️ Supabase URL/KEY تنظیم نشده — حالت آفلاین');
+  }
+} catch (err) {
+  console.error('Supabase init error:', err);
+}
 
-    /* ================= دکمه ورود (اصلاح‌شده) ================= */
-    if (loginBtn && emailForm) {
-      loginBtn.addEventListener('click', function (e) {
-        e.preventDefault();
-        console.log('دکمه ورود کلیک شد');
-        if (welcomeButtons) welcomeButtons.style.display = 'none';
-        emailForm.style.display = 'block';
-        if (emailInput) emailInput.focus();
-      });
-    } else {
-      console.error('loginBtn یا emailForm پیدا نشد!', { loginBtn, emailForm });
+/* ============================================================
+   ابزارها
+   ============================================================ */
+const $ = (sel) => document.querySelector(sel);
+const $$ = (sel) => document.querySelectorAll(sel);
+
+function toast(msg, type = 'info', duration = 3000) {
+  const box = $('#toastBox');
+  if (!box) return;
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.textContent = msg;
+  box.appendChild(el);
+  setTimeout(() => {
+    el.style.opacity = '0';
+    el.style.transition = 'opacity .3s';
+    setTimeout(() => el.remove(), 300);
+  }, duration);
+}
+
+function escapeHTML(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, (m) => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]
+  ));
+}
+function escapeJS(s) {
+  return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+}
+function formatPrice(n) {
+  return Number(n || 0).toLocaleString('fa-IR');
+}
+function readFileAsDataURL(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => resolve(e.target.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+/* ============================================================
+   وضعیت سراسری
+   ============================================================ */
+const state = {
+  user: null,
+  isGuest: false,
+  profile: null,
+  products: [],
+  cart: JSON.parse(localStorage.getItem('zardaloo_cart') || '[]'),
+  messages: [],
+  theme: localStorage.getItem('zardaloo_theme') || 'light',
+};
+
+/* ============================================================
+   تم
+   ============================================================ */
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  const btn = $('#themeToggle');
+  if (btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+  localStorage.setItem('zardaloo_theme', theme);
+  state.theme = theme;
+}
+applyTheme(state.theme);
+
+if ($('#themeToggle')) {
+  $('#themeToggle').addEventListener('click', () => {
+    applyTheme(state.theme === 'dark' ? 'light' : 'dark');
+  });
+}
+
+/* ============================================================
+   صفحه ورود — دکمه‌ها
+   ============================================================ */
+const welcomeScreen = $('#welcomeScreen');
+const profileSetup = $('#profileSetup');
+const appEl = $('#app');
+const welcomeButtons = $('#welcomeButtons');
+const guestBtn = $('#guestBtn');
+const loginBtn = $('#loginBtn');
+const emailForm = $('#emailForm');
+const emailInput = $('#emailInput');
+const emailError = $('#emailError');
+const emailSuccess = $('#emailSuccess');
+
+if (loginBtn && emailForm) {
+  loginBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    console.log('login clicked');
+    if (welcomeButtons) welcomeButtons.style.display = 'none';
+    emailForm.style.display = 'block';
+    if (emailInput) emailInput.focus();
+  });
+} else {
+  console.error('loginBtn/emailForm not found');
+}
+
+if (guestBtn) {
+  guestBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    state.isGuest = true;
+    state.user = null;
+    localStorage.setItem('zardaloo_user', 'guest');
+    showApp();
+    toast('ورود به‌عنوان میهمان', 'success');
+  });
+}
+
+if (emailForm) {
+  emailForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = emailInput.value.trim();
+    if (!email || !email.includes('@') || !email.includes('.')) {
+      emailError.textContent = 'لطفاً یک ایمیل معتبر وارد کنید.';
+      emailSuccess.textContent = '';
+      return;
+    }
+    emailError.textContent = '';
+    emailSuccess.textContent = 'در حال ارسال...';
+
+    if (!supabase) {
+      emailError.textContent = '❌ Supabase تنظیم نشده است.';
+      emailSuccess.textContent = '';
+      return;
     }
 
-    /* ================= دکمه میهمان ================= */
-    if (guestBtn) {
-      guestBtn.addEventListener('click', function (e) {
-        e.preventDefault();
-        console.log('ورود میهمان');
-        isGuest = true;
-        currentUser = null;
-        localStorage.setItem('zardaloo_user', 'guest');
-        showApp();
-      });
-    }
-
-    /* ================= فرم ایمیل ================= */
-    if (emailForm) {
-      emailForm.addEventListener('submit', async function (e) {
-        e.preventDefault();
-        const email = emailInput.value.trim();
-        if (!email || !email.includes('@') || !email.includes('.')) {
-          emailError.textContent = 'لطفاً یک ایمیل معتبر وارد کنید.';
-          emailSuccess.textContent = '';
-          return;
-        }
-        emailError.textContent = '';
-        emailSuccess.textContent = 'در حال ارسال...';
-
-        const { error } = await supabase.auth.signInWithOtp({
-          email: email,
-          options: { emailRedirectTo: window.location.href }
-        });
-
-        if (error) {
-          emailError.textContent = '❌ ' + error.message;
-          emailSuccess.textContent = '';
-        } else {
-          emailSuccess.textContent = '✅ لینک ورود به ایمیل شما ارسال شد. ایمیل را بررسی کنید.';
-          emailError.textContent = '';
-        }
-      });
-    }
-
-    /* ================= بررسی وضعیت ورود اولیه ================= */
-    async function initAuth() {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user) {
-          currentUser = session.user;
-          showApp();
-          await loadProfileFromDB();
-        } else if (localStorage.getItem('zardaloo_user') === 'guest') {
-          isGuest = true;
-          showApp();
-        } else {
-          welcomeScreen.classList.remove('hidden');
-          app.classList.add('hidden');
-        }
-      } catch (err) {
-        console.error('initAuth error:', err);
-        // حتی اگر Supabase خطا داد، دکمه‌ها باید کار کنن
-        welcomeScreen.classList.remove('hidden');
-      }
-    }
-    initAuth();
-
-    supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        currentUser = session.user;
-        loadProfileFromDB();
-      }
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: window.location.href },
     });
 
-    function showApp() {
-      welcomeScreen.classList.add('hidden');
-      profileSetup.classList.add('hidden');
-      app.classList.remove('hidden');
+    if (error) {
+      emailError.textContent = '❌ ' + error.message;
+      emailSuccess.textContent = '';
+    } else {
+      emailSuccess.textContent = '✅ لینک ورود به ایمیل شما ارسال شد.';
+      emailError.textContent = '';
+    }
+  });
+}
+
+/* ============================================================
+   نمایش اپ
+   ============================================================ */
+function showApp() {
+  if (welcomeScreen) welcomeScreen.classList.add('hidden');
+  if (profileSetup) profileSetup.classList.add('hidden');
+  if (appEl) appEl.classList.remove('hidden');
+  loadProducts();
+  loadCartFromDB();
+  loadMessages();
+  updateStats();
+  updateManageList();
+}
+
+/* ============================================================
+   بررسی وضعیت ورود اولیه
+   ============================================================ */
+async function initAuth() {
+  if (!supabase) {
+    if (localStorage.getItem('zardaloo_user') === 'guest') {
+      state.isGuest = true;
+      showApp();
+    }
+    return;
+  }
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) {
+      state.user = session.user;
+      showApp();
+      await loadProfileFromDB();
+    } else if (localStorage.getItem('zardaloo_user') === 'guest') {
+      state.isGuest = true;
+      showApp();
+    } else {
+      welcomeScreen.classList.remove('hidden');
+      appEl.classList.add('hidden');
+    }
+  } catch (err) {
+    console.error('initAuth:', err);
+    welcomeScreen.classList.remove('hidden');
+  }
+}
+initAuth();
+
+if (supabase) {
+  supabase.auth.onAuthStateChange((_event, session) => {
+    if (session?.user) {
+      state.user = session.user;
+      loadProfileFromDB();
+    }
+  });
+}
+
+/* ============================================================
+   خروج
+   ============================================================ */
+if ($('#logoutBtn')) {
+  $('#logoutBtn').addEventListener('click', async () => {
+    if (supabase) await supabase.auth.signOut();
+    localStorage.removeItem('zardaloo_user');
+    state.user = null;
+    state.isGuest = false;
+    state.profile = null;
+    appEl.classList.add('hidden');
+    welcomeScreen.classList.remove('hidden');
+    welcomeButtons.style.display = '';
+    emailForm.style.display = 'none';
+    emailInput.value = '';
+    emailError.textContent = '';
+    emailSuccess.textContent = '';
+    toast('خارج شدید', 'info');
+  });
+}
+
+/* ============================================================
+   پروفایل
+   ============================================================ */
+const avatarPreview = $('#avatarPreview');
+const avatarFile = $('#avatarFile');
+const fullName = $('#fullName');
+const phone = $('#phone');
+const zardalooNumber = $('#zardalooNumber');
+const saveProfileBtn = $('#saveProfileBtn');
+const profileStatus = $('#profileStatus');
+let selectedAvatar = '👤';
+let avatarImageData = null;
+
+$$('.avatar-option').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    selectedAvatar = btn.dataset.avatar;
+    avatarImageData = null;
+    if (avatarPreview) avatarPreview.textContent = selectedAvatar;
+  });
+});
+
+if (avatarFile) {
+  avatarFile.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    avatarImageData = await readFileAsDataURL(file);
+    if (avatarPreview) avatarPreview.innerHTML = `<img src="${avatarImageData}" alt="avatar">`;
+  });
+}
+
+if (saveProfileBtn) {
+  saveProfileBtn.addEventListener('click', async () => {
+    if (!state.user) {
+      profileStatus.textContent = '❌ ابتدا با ایمیل وارد شوید.';
+      profileStatus.style.color = 'var(--danger)';
+      return;
+    }
+    const profile = {
+      id: state.user.id,
+      name: fullName.value.trim(),
+      phone: phone.value.trim(),
+      zardaloo: zardalooNumber.value.trim(),
+      avatar: avatarImageData || selectedAvatar,
+      updated_at: new Date().toISOString(),
+    };
+    saveProfileBtn.disabled = true;
+    profileStatus.textContent = 'در حال ذخیره...';
+
+    const { error } = await supabase.from('profiles').upsert(profile);
+
+    saveProfileBtn.disabled = false;
+    if (error) {
+      profileStatus.textContent = '❌ ' + error.message;
+      profileStatus.style.color = 'var(--danger)';
+    } else {
+      profileStatus.textContent = '✅ ذخیره شد.';
+      profileStatus.style.color = 'var(--success)';
+      state.profile = profile;
+      showApp();
+      applyProfileToUI(profile);
+      toast('پروفایل ذخیره شد', 'success');
+    }
+  });
+}
+
+async function loadProfileFromDB() {
+  if (!state.user || !supabase) return;
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', state.user.id)
+    .maybeSingle();
+
+  if (error) { console.error(error); return; }
+
+  if (!data) {
+    if (profileSetup) profileSetup.classList.remove('hidden');
+    if (appEl) appEl.classList.add('hidden');
+    return;
+  }
+  state.profile = data;
+  applyProfileToUI(data);
+}
+
+function applyProfileToUI(p) {
+  const name = p.name || '---';
+  const phoneV = p.phone || '---';
+  const zardaloo = p.zardaloo || '---';
+  if ($('#homeName')) $('#homeName').textContent = name;
+  if ($('#homePhone')) $('#homePhone').textContent = phoneV;
+  if ($('#homeZardaloo')) $('#homeZardaloo').textContent = zardaloo;
+
+  const avatarHTML = p.avatar && String(p.avatar).startsWith('data:')
+    ? `<img src="${p.avatar}" alt="avatar">`
+    : (p.avatar || '👤');
+  if ($('#homeAvatar')) $('#homeAvatar').innerHTML = avatarHTML;
+  if ($('#headerAvatar')) $('#headerAvatar').innerHTML = avatarHTML;
+}
+
+/* ============================================================
+   ناوبری
+   ============================================================ */
+$$('#mainNav button').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    $$('#mainNav button').forEach((b) => b.classList.remove('active'));
+    btn.classList.add('active');
+    $$('.page').forEach((p) => p.classList.remove('active'));
+    const pageId = btn.dataset.page;
+    const page = document.getElementById(pageId);
+    if (page) page.classList.add('active');
+    if (pageId === 'marketPage') loadProducts();
+    if (pageId === 'cartPage') renderCart();
+    if (pageId === 'reportPage') updateStats();
+    if (pageId === 'managePage') updateManageList();
+    if (pageId === 'messengerPage') loadMessages();
+  });
+});
+
+/* ============================================================
+   ثبت کالا
+   ============================================================ */
+const submitProductBtn = $('#submitProductBtn');
+const supabaseStatus = $('#supabaseStatus');
+let productImageData = null;
+
+if ($('#productImage')) {
+  $('#productImage').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) { productImageData = null; return; }
+    productImageData = await readFileAsDataURL(file);
+  });
+}
+
+if (submitProductBtn) {
+  submitProductBtn.addEventListener('click', async () => {
+    const title = $('#productTitle').value.trim();
+    const desc = $('#productDesc').value.trim();
+    const price = parseInt($('#productPrice').value, 10);
+    const stock = parseInt($('#productStock').value, 10) || 1;
+    const category = $('#productCategory').value;
+
+    if (!title || !price) {
+      supabaseStatus.textContent = '❌ نام کالا و قیمت الزامی است.';
+      supabaseStatus.style.color = 'var(--danger)';
+      return;
+    }
+    if (!state.user) {
+      supabaseStatus.textContent = '❌ برای ثبت کالا باید با ایمیل وارد شوید.';
+      supabaseStatus.style.color = 'var(--danger)';
+      return;
+    }
+    if (!supabase) {
+      supabaseStatus.textContent = '❌ Supabase تنظیم نشده است.';
+      supabaseStatus.style.color = 'var(--danger)';
+      return;
+    }
+
+    submitProductBtn.disabled = true;
+    submitProductBtn.textContent = 'در حال ثبت...';
+    supabaseStatus.textContent = '';
+
+    let imageUrl = null;
+    try {
+      if (productImageData) {
+        const res = await fetch(productImageData);
+        const blob = await res.blob();
+        const fileName = `p_${Date.now()}_${Math.random().toString(36).slice(2)}.jpg`;
+        const { error: upErr } = await supabase.storage
+          .from('products')
+          .upload(fileName, blob, { contentType: 'image/jpeg' });
+        if (!upErr) {
+          const { data: pub } = supabase.storage.from('products').getPublicUrl(fileName);
+          imageUrl = pub?.publicUrl || null;
+        } else {
+          console.warn('upload error', upErr);
+        }
+      }
+    } catch (e) { console.warn('upload exception', e); }
+
+    const { data, error } = await supabase
+      .from('products')
+      .insert([{
+        title, description: desc, price, category,
+        image_url: imageUrl, stock,
+        seller_id: state.user.id,
+        seller_name: state.profile?.name || state.user.email || '',
+      }])
+      .select();
+
+    submitProductBtn.disabled = false;
+    submitProductBtn.textContent = 'ثبت کالا';
+
+    if (error) {
+      console.error(error);
+      supabaseStatus.textContent = '❌ ' + error.message;
+      supabaseStatus.style.color = 'var(--danger)';
+      toast('خطا در ثبت کالا', 'error');
+    } else {
+      supabaseStatus.textContent = '✅ کالا ثبت شد!';
+      supabaseStatus.style.color = 'var(--success)';
+      $('#productTitle').value = '';
+      $('#productDesc').value = '';
+      $('#productPrice').value = '';
+      $('#productStock').value = '1';
+      productImageData = null;
+      if ($('#productImage')) $('#productImage').value = '';
+      toast('کالا با موفقیت ثبت شد', 'success');
       loadProducts();
     }
+  });
+}
 
-    /* ================= ساخت پروفایل ================= */
-    const avatarPreview = document.getElementById('avatarPreview');
-    const avatarFile = document.getElementById('avatarFile');
-    const fullName = document.getElementById('fullName');
-    const phone = document.getElementById('phone');
-    const zardalooNumber = document.getElementById('zardalooNumber');
-    const saveProfileBtn = document.getElementById('saveProfileBtn');
-    const profileStatus = document.getElementById('profileStatus');
-    let selectedAvatar = '👤';
-    let avatarImageData = null;
+/* ============================================================
+   بارگذاری محصولات
+   ============================================================ */
+const productsGrid = $('#productsGrid');
+const searchInput = $('#searchInput');
+const categoryFilter = $('#categoryFilter');
+const sortFilter = $('#sortFilter');
 
-    document.querySelectorAll('.avatar-option').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        selectedAvatar = btn.dataset.avatar;
-        avatarImageData = null;
-        avatarPreview.textContent = selectedAvatar;
-      });
-    });
+async function loadProducts() {
+  if (!productsGrid) return;
+  productsGrid.innerHTML = '<div class="loading">در حال بارگذاری...</div>';
 
-    if (avatarFile) {
-      avatarFile.addEventListener('change', function (e) {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function (ev) {
-          avatarImageData = ev.target.result;
-          avatarPreview.innerHTML = '<img src="' + avatarImageData + '" alt="avatar">';
-        };
-        reader.readAsDataURL(file);
-      });
-    }
+  if (!supabase) {
+    productsGrid.innerHTML = '<div class="loading">حالت آفلاین — Supabase تنظیم نشده.</div>';
+    return;
+  }
 
-    if (saveProfileBtn) {
-      saveProfileBtn.addEventListener('click', async function () {
-        if (!currentUser) {
-          profileStatus.textContent = '❌ ابتدا با ایمیل وارد شوید.';
-          profileStatus.style.color = 'red';
-          return;
-        }
-        const profile = {
-          id: currentUser.id,
-          name: fullName.value.trim(),
-          phone: phone.value.trim(),
-          zardaloo: zardalooNumber.value.trim(),
-          avatar: avatarImageData || selectedAvatar,
-        };
-        saveProfileBtn.disabled = true;
-        profileStatus.textContent = 'در حال ذخیره...';
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .order('created_at', { ascending: false });
 
-        const { error } = await supabase.from('profiles').upsert(profile);
+  if (error) {
+    console.error(error);
+    productsGrid.innerHTML = '<div class="loading">❌ خطا در بارگذاری.</div>';
+    return;
+  }
+  state.products = data || [];
+  renderProducts();
+}
 
-        saveProfileBtn.disabled = false;
-        if (error) {
-          profileStatus.textContent = '❌ ' + error.message;
-          profileStatus.style.color = 'red';
-        } else {
-          profileStatus.textContent = '✅ پروفایل ذخیره شد.';
-          profileStatus.style.color = 'green';
-          profileSetup.classList.add('hidden');
-          showApp();
-          await loadProfileFromDB();
-        }
-      });
-    }
+function renderProducts() {
+  if (!productsGrid) return;
+  const q = (searchInput?.value || '').trim().toLowerCase();
+  const cat = categoryFilter?.value || '';
+  const sort = sortFilter?.value || 'newest';
 
-    /* ================= بارگذاری پروفایل ================= */
-    async function loadProfileFromDB() {
-      if (!currentUser) return;
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', currentUser.id)
-        .maybeSingle();
+  let list = state.products.slice();
+  if (q) list = list.filter((p) => (p.title || '').toLowerCase().includes(q));
+  if (cat) list = list.filter((p) => p.category === cat);
 
-      if (error) { console.error(error); return; }
+  if (sort === 'cheap') list.sort((a, b) => a.price - b.price);
+  else if (sort === 'expensive') list.sort((a, b) => b.price - a.price);
+  else list.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
-      if (!data) {
-        profileSetup.classList.remove('hidden');
-        app.classList.add('hidden');
-        return;
-      }
+  if (list.length === 0) {
+    productsGrid.innerHTML = '<div class="loading">محصولی یافت نشد.</div>';
+    return;
+  }
 
-      document.getElementById('homeName').textContent = data.name || '---';
-      document.getElementById('homePhone').textContent = data.phone || '---';
-      document.getElementById('homeZardaloo').textContent = data.zardaloo || '---';
+  productsGrid.innerHTML = list.map((p) => {
+    const img = p.image_url
+      ? `<img src="${escapeHTML(p.image_url)}" alt="${escapeHTML(p.title)}">`
+      : '🛒';
+    return `
+      <div class="product-card">
+        <div class="product-image">${img}</div>
+        <h3>${escapeHTML(p.title)}</h3>
+        ${p.description ? `<div class="product-desc">${escapeHTML(p.description)}</div>` : ''}
+        <div class="product-price">${formatPrice(p.price)} تومان</div>
+        <div class="product-meta">
+          <span>فروشنده: ${escapeHTML(p.seller_name || '---')}</span>
+          <span>موجودی: ${p.stock || 0}</span>
+        </div>
+        <button type="button" class="yellow-button"
+          onclick="window.addToCartById(${p.id})">افزودن به سبد</button>
+      </div>`;
+  }).join('');
+}
 
-      const avatarHTML = data.avatar && data.avatar.startsWith('data:')
-        ? '<img src="' + data.avatar + '" alt="avatar">'
-        : (data.avatar || '👤');
-      document.getElementById('homeAvatar').innerHTML = avatarHTML;
-      document.getElementById('headerAvatar').innerHTML = avatarHTML;
-    }
+if (searchInput) searchInput.addEventListener('input', renderProducts);
+if (categoryFilter) categoryFilter.addEventListener('change', renderProducts);
+if (sortFilter) sortFilter.addEventListener('change', renderProducts);
 
-    /* ================= ناوبری صفحات ================= */
-    document.querySelectorAll('nav button').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        document.querySelectorAll('.page').forEach(function (p) { p.classList.remove('active'); });
-        document.getElementById(btn.dataset.page).classList.add('active');
-        if (btn.dataset.page === 'marketPage') loadProducts();
-      });
-    });
+/* ============================================================
+   سبد خرید
+   ============================================================ */
+const cartItemsEl = $('#cartItems');
+const cartSummaryEl = $('#cartSummary');
+const checkoutBtn = $('#checkoutBtn');
 
-    /* ================= ثبت کالا ================= */
-    const submitProductBtn = document.getElementById('submitProductBtn');
-    const supabaseStatus = document.getElementById('supabaseStatus');
+function saveCart() {
+  localStorage.setItem('zardaloo_cart', JSON.stringify(state.cart));
+}
 
-    if (submitProductBtn) {
-      submitProductBtn.addEventListener('click', async function () {
-        const title = document.getElementById('productTitle').value.trim();
-        const price = parseInt(document.getElementById('productPrice').value);
-        const category = document.getElementById('productCategory').value;
+window.addToCartById = function (id) {
+  const p = state.products.find((x) => Number(x.id) === Number(id));
+  if (!p) return;
+  const found = state.cart.find((c) => Number(c.id) === Number(id));
+  if (found) found.qty = (found.qty || 1) + 1;
+  else state.cart.push({ id: p.id, title: p.title, price: Number(p.price), qty: 1 });
+  saveCart();
+  renderCart();
+  toast('به سبد اضافه شد ✅', 'success');
+  syncCartToDB();
+};
 
-        if (!title || !price) {
-          supabaseStatus.textContent = '❌ لطفاً نام کالا و قیمت را وارد کنید.';
-          supabaseStatus.style.color = 'red';
-          return;
-        }
+window.removeFromCart = function (idx) {
+  state.cart.splice(idx, 1);
+  saveCart();
+  renderCart();
+  syncCartToDB();
+};
 
-        if (!currentUser) {
-          supabaseStatus.textContent = '❌ برای ثبت کالا باید با ایمیل وارد شوید (میهمان نمی‌تواند ثبت کند).';
-          supabaseStatus.style.color = 'red';
-          return;
-        }
+window.changeQty = function (idx, delta) {
+  const item = state.cart[idx];
+  if (!item) return;
+  item.qty = (item.qty || 1) + delta;
+  if (item.qty < 1) item.qty = 1;
+  saveCart();
+  renderCart();
+  syncCartToDB();
+};
 
-        submitProductBtn.disabled = true;
-        submitProductBtn.textContent = 'در حال ثبت...';
-        supabaseStatus.textContent = '';
+function renderCart() {
+  if (!cartItemsEl) return;
+  if (state.cart.length === 0) {
+    cartItemsEl.innerHTML = '<p>سبد خرید خالی است.</p>';
+    if (cartSummaryEl) cartSummaryEl.style.display = 'none';
+    if (checkoutBtn) checkoutBtn.style.display = 'none';
+    return;
+  }
+  cartItemsEl.innerHTML = state.cart.map((item, i) => `
+    <div class="cart-item">
+      <div class="cart-item-info">
+        <strong>${escapeHTML(item.title)}</strong><br>
+        <span>${formatPrice(item.price)} تومان</span>
+      </div>
+      <div class="qty-controls">
+        <button type="button" class="qty-btn" onclick="window.changeQty(${i}, -1)">−</button>
+        <span>${item.qty || 1}</span>
+        <button type="button" class="qty-btn" onclick="window.changeQty(${i}, 1)">+</button>
+      </div>
+      <button type="button" class="red-button" onclick="window.removeFromCart(${i})">حذف</button>
+    </div>
+  `).join('');
 
-        const { data, error } = await supabase
-          .from('products')
-          .insert([{ title: title, price: price, category: category, seller_id: currentUser.id }])
-          .select();
+  const total = state.cart.reduce((s, it) => s + Number(it.price) * (it.qty || 1), 0);
+  if (cartSummaryEl) {
+    cartSummaryEl.style.display = 'block';
+    cartSummaryEl.innerHTML = `تعداد اقلام: <strong>${state.cart.length}</strong><br>
+      جمع کل: <strong>${formatPrice(total)} تومان</strong>`;
+  }
+  if (checkoutBtn) checkoutBtn.style.display = 'block';
+}
 
-        submitProductBtn.disabled = false;
-        submitProductBtn.textContent = 'ثبت کالا در Supabase';
+async function syncCartToDB() {
+  if (!state.user || !supabase) return;
+  try {
+    await supabase.from('cart_items').delete().eq('user_id', state.user.id);
+    if (state.cart.length === 0) return;
+    const rows = state.cart.map((c) => ({
+      user_id: state.user.id,
+      product_id: c.id,
+      quantity: c.qty || 1,
+    }));
+    await supabase.from('cart_items').insert(rows);
+  } catch (e) { console.warn('syncCartToDB', e); }
+}
 
-        if (error) {
-          console.error('Supabase error:', error);
-          supabaseStatus.textContent = '❌ خطا: ' + error.message;
-          supabaseStatus.style.color = 'red';
-        } else {
-          supabaseStatus.textContent = '✅ کالا با موفقیت در Supabase ثبت شد!';
-          supabaseStatus.style.color = 'green';
-          document.getElementById('productTitle').value = '';
-          document.getElementById('productPrice').value = '';
-          loadProducts();
-        }
-      });
-    }
-
-    /* ================= خواندن محصولات ================= */
-    const productsGrid = document.getElementById('productsGrid');
-    const searchInput = document.getElementById('searchInput');
-    const categoryFilter = document.getElementById('categoryFilter');
-    let allProducts = [];
-
-    async function loadProducts() {
-      productsGrid.innerHTML = '<div class="loading">در حال بارگذاری...</div>';
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        productsGrid.innerHTML = '<div class="loading">❌ خطا در بارگذاری محصولات.</div>';
-        console.error(error);
-        return;
-      }
-      allProducts = data || [];
-      renderProducts();
-    }
-
-    function renderProducts() {
-      const q = (searchInput.value || '').trim().toLowerCase();
-      const cat = categoryFilter.value;
-
-      let list = allProducts;
-      if (q) list = list.filter(function (p) { return p.title.toLowerCase().includes(q); });
-      if (cat) list = list.filter(function (p) { return p.category === cat; });
-
-      if (list.length === 0) {
-        productsGrid.innerHTML = '<div class="loading">محصولی یافت نشد.</div>';
-        return;
-      }
-
-      productsGrid.innerHTML = list.map(function (p) {
-        return '<div class="product-card">' +
-          '<h3>' + escapeHTML(p.title) + '</h3>' +
-          '<div class="product-price">' + Number(p.price).toLocaleString('fa-IR') + ' تومان</div>' +
-          '<button type="button" class="yellow-button" onclick="addToCart(' + p.id + ', \'' + escapeJS(p.title) + '\', ' + p.price + ')">افزودن به سبد</button>' +
-        '</div>';
-      }).join('');
-    }
-
-    function escapeHTML(s) {
-      return String(s).replace(/[&<>"']/g, function (m) {
-        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
-      });
-    }
-    function escapeJS(s) { return String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
-
-    if (searchInput) searchInput.addEventListener('input', renderProducts);
-    if (categoryFilter) categoryFilter.addEventListener('change', renderProducts);
-
-    /* ================= سبد خرید ================= */
-    const cartItems = document.getElementById('cartItems');
-    const cartSummary = document.getElementById('cartSummary');
-    let cart = JSON.parse(localStorage.getItem('zardaloo_cart') || '[]');
-
-    window.addToCart = function (id, title, price) {
-      cart.push({ id: id, title: title, price: price });
-      localStorage.setItem('zardaloo_cart', JSON.stringify(cart));
+async function loadCartFromDB() {
+  if (!state.user || !supabase) return;
+  try {
+    const { data } = await supabase
+      .from('cart_items')
+      .select('*, products(*)')
+      .eq('user_id', state.user.id);
+    if (data && data.length) {
+      state.cart = data.map((r) => ({
+        id: r.product_id,
+        title: r.products?.title || '---',
+        price: Number(r.products?.price || 0),
+        qty: r.quantity || 1,
+      }));
+      saveCart();
       renderCart();
-      alert('به سبد اضافه شد ✅');
-    };
+    }
+  } catch (e) { console.warn('loadCartFromDB', e); }
+}
 
-    function renderCart() {
-      if (cart.length === 0) {
-        cartItems.innerHTML = '<p>سبد خرید خالی است.</p>';
-        cartSummary.style.display = 'none';
-        return;
-      }
-      cartItems.innerHTML = cart.map(function (item, i) {
-        return '<div class="cart-item">' +
-         
+if (checkoutBtn) {
+  checkoutBtn.addEventListener('click', async () => {
+    if (state.cart.length === 0) return;
+    if (!state.user) {
+      toast('برای نهایی کردن خرید با ایمیل وارد شوید', 'error');
+      return;
+    }
+    toast('سفارش ثبت شد (نمونه) ✅', 'success');
+    state.cart = [];
+    saveCart();
+    renderCart();
+    syncCartToDB();
+  });
+}
+
+/* ============================================================
+   پیام‌رسان
+   ============================================================ */
+const messagesList = $('#messagesList');
+const messageForm = $('#messageForm');
+const messageInput = $('#messageInput');
+
+async function loadMessages() {
+  if (!messagesList) return;
+  if (!supabase || !state.user) {
+    messagesList.innerHTML = '<div class="message-item">برای دیدن پیام‌ها با ایمیل وارد شوید.</div>';
+    return;
+  }
+  const { data, error } = await supabase
+    .from('messages')
+    .select('*')
+    .or(`sender_id.eq.${state.user.id},receiver_id.eq.${state.user.id}`)
+    .order('created_at', { ascending: true });
+
+  if (error) { console.error(error); return; }
+  state.messages = data || [];
+  if (state.messages.length === 0) {
+    messagesList.innerHTML = '<div class="message-item">پیامی وجود ندارد.</div>';
+    return;
+  }
+  messagesList.innerHTML = state.messages.map((m) => `
+    <div class="message-item">
+      <div>${escapeHTML(m.body)}</div>
+      <small style="color:var(--text-soft)">${new Date(m.created_at).toLocaleString('fa-IR')}</small>
+    </div>
+  `).join('');
+}
+
+if (messageForm) {
+  messageForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const body = messageInput.value.trim();
+    if (!body) return;
+    if (!state.user) { toast('برای ارسال پیام وارد شوید', 'error'); return; }
+    if (!supabase) { toast('Supabase تنظیم نشده', 'error'); return; }
+    const { error } = await supabase.from('messages').insert([{
+      sender_id: state.user.id,
+      receiver_id: state.user.id,
+      body,
+    }]);
+    if (error) { toast('خطا: ' + error.message, 'error'); return; }
+    messageInput.value = '';
+    toast('پیام ارسال شد', 'success');
+    loadMessages();
+  });
+}
+
+/* ============================================================
+   آمار فروشنده
+   ============================================================ */
+function updateStats() {
+  if (!state.user) return;
+  const mine = state.products.filter((p) => p.seller_id === state.user.id);
+  const totalValue = mine.reduce((s, p) => s + Number(p.price) * (p.stock || 1), 0);
+  const totalViews = mine.reduce((s, p) => s + Number(p.views || 0), 0);
+  if ($('#statProducts')) $('#statProducts').textContent = mine.length;
+  if ($('#statValue')) $('#statValue').textContent = formatPrice(totalValue);
+  if ($('#statViews')) $('#statViews').textContent = formatPrice(totalViews);
+}
+
+/* ============================================================
+   مدیریت کالاها
+   ============================================================ */
+async function updateManageList() {
+  const list = $('#manageList');
+  if (!list) return;
+  if (!state.user || !supabase) {
+    list.innerHTML = '<p>برای مدیریت کالاها با ایمیل وارد شوید.</p>';
+    return;
+  }
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .eq('seller_id', state.user.id)
+    .order('created_at', { ascending: false });
+
+  if (error) { console.error(error); return; }
+  if (!data || data.length === 0) {
+    list.innerHTML = '<p>کالایی برای مدیریت وجود ندارد.</p>';
+    return;
+  }
+  list.innerHTML = data.map((p) => `
+    <div class="manage-row">
+      <div><strong>${escapeHTML(p.title)}</strong> — ${formatPrice(p.price)} تومان</div>
+      <div>
+        <button type="button" class="ghost-button" onclick="window.deleteProduct(${p.id})">حذف</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+window.deleteProduct = async function (id) {
+  if (!state.user || !supabase) return;
+  if (!confirm('از حذف این کالا مطمئن هستید؟')) return;
+  const { error } = await supabase.from('products').delete()
+    .eq('id', id).eq('seller_id', state.user.id);
+  if (error) { toast('خطا: ' + error.message, 'error'); return; }
+  toast('کالا حذف شد', 'success');
+  loadProducts();
+  updateManageList();
+};
+
+/* ============================================================
+   آماده‌سازی اولیه
+   ============================================================ */
+renderCart();
+console.log('🚀 Zardaloo ready — state:', state);
+</script>
+</body>
+</html>
