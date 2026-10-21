@@ -64,22 +64,17 @@
     }
     .hero h2 { font-size: 1.8rem; color: #f57f17; margin-bottom: 15px; }
     .hero p { max-width: 600px; margin: 0 auto 20px; }
-
-    /* ✅ جعبه ویدیو آپارات */
-    .video-box {
-      max-width: 720px;
-      margin: 0 auto;
-      border-radius: 14px;
-      overflow: hidden;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-      background: #000;
+    .btn {
+      display: inline-block;
+      background: #f9a825;
+      color: white;
+      padding: 12px 28px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background 0.2s;
     }
-    .video-box iframe {
-      display: block;
-      border: none;
-      width: 100%;
-      height: 360px;
-    }
+    .btn:hover { background: #f57f17; }
 
     .cards {
       display: grid;
@@ -127,9 +122,111 @@
 
     /* فایل صوتی مخفی */
     #bgMusic { display: none; }
+
+    /* ================= صفحه ورود ================= */
+    #loginScreen {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #2c3e50, #4a69bd, #1e3799);
+      box-shadow: inset 0 0 200px rgba(0, 0, 0, 0.5);
+    }
+    .login-box {
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 20px;
+      padding: 40px 30px;
+      width: 90%;
+      max-width: 380px;
+      text-align: center;
+      color: white;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    }
+    .login-box h2 {
+      font-size: 1.6rem;
+      margin-bottom: 8px;
+    }
+    .login-box .sub {
+      font-size: 0.9rem;
+      opacity: 0.85;
+      margin-bottom: 25px;
+    }
+    .login-box button {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      margin-bottom: 14px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.15s, background 0.2s;
+    }
+    .login-box button:hover { transform: scale(1.03); }
+    #guestBtn {
+      background: #f9a825;
+      color: #fff;
+    }
+    #guestBtn:hover { background: #f57f17; }
+    #loginBtn {
+      background: #fff;
+      color: #1e3799;
+    }
+    #loginBtn:hover { background: #e8e8e8; }
+
+    /* فرم ایمیل */
+    #emailForm {
+      display: none;
+      margin-top: 10px;
+    }
+    #emailForm input {
+      width: 100%;
+      padding: 13px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      font-size: 1rem;
+      margin-bottom: 14px;
+      outline: none;
+    }
+    #emailForm input::placeholder { color: rgba(255, 255, 255, 0.7); }
+    #emailForm button {
+      background: #4a69bd;
+      color: white;
+    }
+    #emailForm button:hover { background: #1e3799; }
+    #loginError {
+      color: #ffb3b3;
+      font-size: 0.85rem;
+      margin-top: 8px;
+      min-height: 18px;
+    }
   </style>
 </head>
 <body>
+
+  <!-- ✅ صفحه ورود (فقط بار اول) -->
+  <div id="loginScreen">
+    <div class="login-box">
+      <h2>🍑 زردآلو</h2>
+      <p class="sub">برای ورود یکی از گزینه‌ها را انتخاب کنید</p>
+
+      <button id="guestBtn">ورود میهمان</button>
+      <button id="loginBtn">ورود</button>
+
+      <form id="emailForm">
+        <input type="email" id="emailInput" placeholder="ایمیل خود را وارد کنید" required>
+        <button type="submit">تأیید و ورود</button>
+        <div id="loginError"></div>
+      </form>
+    </div>
+  </div>
 
   <!-- ✅ آهنگ پس‌زمینه -->
   <audio id="bgMusic" loop>
@@ -141,7 +238,7 @@
   <button id="soundToggle" title="قطع/وصل صدا">🔊</button>
 
   <header>
-    <h1>🍑 زردآلو</h1>
+    <h1>زردآلو</h1>
     <p>با زردآلو خرید راحته!</p>
   </header>
 
@@ -157,16 +254,7 @@
   <section class="hero">
     <h2>بازار آنلاین خرید و فروش کالا</h2>
     <p>زردآلو یک بازار آنلاین برای خرید و فروش کالا است. در این بازار سبد خرید، مدیریت، بازار و ثبت کالا امکان‌پذیر است.</p>
-
-    <!-- ✅ ویدیوی آپارات جای تیزر -->
-    <div class="video-box">
-      <iframe src="https://www.aparat.com/video/video/embed/videohash/ggl6u79/vt/frame"
-              allowfullscreen="true"
-              webkitallowfullscreen="true"
-              mozallowfullscreen="true"
-              width="100%" height="360" frameborder="0">
-      </iframe>
-    </div>
+    <a href="#" class="btn">مشاهده تیزر در ایتا 🚀</a>
   </section>
 
   <section class="profile" id="profile">
@@ -224,8 +312,50 @@
     <p class="credit">با زردآلو خرید راحته! 🍑</p>
   </footer>
 
-  <!-- ✅ اسکریپت پخش آهنگ -->
+  <!-- ✅ اسکریپت‌ها -->
   <script>
+    /* ---------- صفحه ورود ---------- */
+    const loginScreen = document.getElementById('loginScreen');
+    const guestBtn = document.getElementById('guestBtn');
+    const loginBtn = document.getElementById('loginBtn');
+    const emailForm = document.getElementById('emailForm');
+    const emailInput = document.getElementById('emailInput');
+    const loginError = document.getElementById('loginError');
+
+    // اگر قبلاً وارد شده (میهمان یا ایمیل)، صفحه ورود نمایش داده نشود
+    const savedUser = localStorage.getItem('zardaloo_user');
+    if (savedUser) {
+      loginScreen.style.display = 'none';
+    }
+
+    // ورود میهمان → مستقیم برو تو، ذخیره کن که دفعه بعد نیاد
+    guestBtn.addEventListener('click', () => {
+      localStorage.setItem('zardaloo_user', 'guest');
+      loginScreen.style.display = 'none';
+    });
+
+    // ورود با ایمیل → فرم ایمیل نمایش داده شود
+    loginBtn.addEventListener('click', () => {
+      emailForm.style.display = 'block';
+      loginBtn.style.display = 'none';
+      guestBtn.style.display = 'none';
+      emailInput.focus();
+    });
+
+    // ثبت ایمیل
+    emailForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = emailInput.value.trim();
+      if (!email || !email.includes('@')) {
+        loginError.textContent = 'لطفاً یک ایمیل معتبر وارد کنید.';
+        return;
+      }
+      loginError.textContent = '';
+      localStorage.setItem('zardaloo_user', email);
+      loginScreen.style.display = 'none';
+    });
+
+    /* ---------- پخش آهنگ ---------- */
     const audio = document.getElementById('bgMusic');
     const toggleBtn = document.getElementById('soundToggle');
     audio.volume = 0.4;
@@ -240,7 +370,7 @@
           audio.play().then(() => {
             isPlaying = true;
             toggleBtn.textContent = '🔊';
-          }).catch(e => console.log('پخش نشد:', e));
+          }).catch(err => console.log('پخش نشد:', err));
           document.removeEventListener('click', onInteract);
           document.removeEventListener('touchstart', onInteract);
         };
