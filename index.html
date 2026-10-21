@@ -130,8 +130,171 @@
     messages.scrollTop = messages.scrollHeight;
     return el;
   }
+<!-- ================= دکمه شناور دیپ‌سیک ================= -->
+<button id="aiFab" title="چت با دیپ‌سیک" style="
+  position: fixed; bottom: 20px; left: 20px; z-index: 99998;
+  width: 64px; height: 64px; border-radius: 50%;
+  background: linear-gradient(135deg, #ffd400, #f0c500);
+  border: 3px solid #fff; padding: 0;
+  box-shadow: 0 8px 25px rgba(255, 212, 0, .5);
+  cursor: pointer; transition: transform .2s;
+  display: flex; align-items: center; justify-content: center;
+">
+  <!-- آرم دیپ‌سیک برای زردآلو -->
+  <svg viewBox="0 0 100 100" width="48" height="48" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="50" cy="52" r="34" fill="#fff" opacity="0.95"/>
+    <circle cx="50" cy="52" r="28" fill="#f9a825"/>
+    <path d="M50 24 Q58 52 50 80" stroke="#e65100" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M50 24 Q62 14 70 22 Q62 30 50 24 Z" fill="#43a047"/>
+    <circle cx="42" cy="48" r="4" fill="#222"/>
+    <circle cx="58" cy="48" r="4" fill="#222"/>
+    <circle cx="43" cy="47" r="1.4" fill="#fff"/>
+    <circle cx="59" cy="47" r="1.4" fill="#fff"/>
+    <path d="M42 60 Q50 68 58 60" stroke="#222" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <circle cx="50" cy="18" r="3" fill="#4a90d9"/>
+    <line x1="50" y1="18" x2="50" y2="24" stroke="#4a90d9" stroke-width="2"/>
+    <circle cx="76" cy="40" r="1.8" fill="#4a90d9" opacity="0.8"/>
+    <circle cx="80" cy="50" r="1.8" fill="#4a90d9" opacity="0.6"/>
+    <circle cx="76" cy="60" r="1.8" fill="#4a90d9" opacity="0.4"/>
+  </svg>
+</button>
 
-  /* ============ مغز چت‌بات (پاسخ‌های از پیش تعریف‌شده) ============ */
+<!-- ================= پنجره چت ================= -->
+<div id="aiChat" style="
+  position: fixed; bottom: 95px; left: 20px; z-index: 99998;
+  width: 360px; max-width: calc(100vw - 40px);
+  height: 500px; max-height: calc(100vh - 130px);
+  background: var(--card, #fff); border: 1px solid var(--border, #eee);
+  border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,.3);
+  display: none; flex-direction: column; overflow: hidden;
+">
+  <!-- هدر -->
+  <div style="
+    background: linear-gradient(135deg,#4a90d9,#6fb1e0);
+    color: #fff; padding: 14px 18px;
+    display: flex; justify-content: space-between; align-items: center;
+  ">
+    <div style="display:flex; align-items:center; gap:10px;">
+      <!-- آرم کوچک -->
+      <svg viewBox="0 0 100 100" width="38" height="38" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="52" r="34" fill="#fff" opacity="0.95"/>
+        <circle cx="50" cy="52" r="28" fill="#f9a825"/>
+        <path d="M50 24 Q58 52 50 80" stroke="#e65100" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path d="M50 24 Q62 14 70 22 Q62 30 50 24 Z" fill="#43a047"/>
+        <circle cx="42" cy="48" r="4" fill="#222"/>
+        <circle cx="58" cy="48" r="4" fill="#222"/>
+        <circle cx="43" cy="47" r="1.4" fill="#fff"/>
+        <circle cx="59" cy="47" r="1.4" fill="#fff"/>
+        <path d="M42 60 Q50 68 58 60" stroke="#222" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <circle cx="50" cy="18" r="3" fill="#4a90d9"/>
+        <line x1="50" y1="18" x2="50" y2="24" stroke="#4a90d9" stroke-width="2"/>
+      </svg>
+      <div>
+        <div style="font-weight:bold; font-size:15px;">دیپ‌سیک</div>
+        <div style="font-size:11px; opacity:.85;">دستیار هوشمند زردآلو</div>
+      </div>
+    </div>
+    <button id="aiClose" style="
+      background: rgba(255,255,255,.2); border: none; color: #fff;
+      width: 30px; height: 30px; border-radius: 50%; font-size: 16px; cursor: pointer;
+    ">×</button>
+  </div>
+
+  <!-- پیام‌ها -->
+  <div id="aiMessages" style="
+    flex: 1; overflow-y: auto; padding: 15px;
+    display: flex; flex-direction: column; gap: 10px;
+    background: var(--bg-soft, #fafafa);
+  ">
+    <div class="ai-msg bot" style="
+      background: var(--card, #fff); padding: 12px 15px; border-radius: 15px 15px 15px 4px;
+      max-width: 85%; font-size: 14px; align-self: flex-start;
+      box-shadow: 0 2px 8px rgba(0,0,0,.06); line-height: 1.7;
+    ">
+      سلام! 👋 من <b>دیپ‌سیک</b> هستم، دستیار هوشمند زردآلو.<br>
+      درباره‌ی سایت، ثبت کالا، خرید، پروفایل یا هر چیز دیگه‌ای بپرس!
+    </div>
+  </div>
+
+  <!-- ورودی -->
+  <form id="aiForm" style="
+    display: flex; gap: 8px; padding: 12px;
+    border-top: 1px solid var(--border, #eee); background: var(--card, #fff);
+  ">
+    <input id="aiInput" type="text" placeholder="سوالت رو بنویس..." style="
+      flex: 1; padding: 12px; border: 1px solid var(--border, #eee);
+      border-radius: 12px; outline: none; background: var(--bg, #fff);
+      color: var(--text, #222); font-size: 14px;
+    ">
+    <button type="submit" style="
+      background: #4a90d9; color: #fff; border: none;
+      width: 46px; border-radius: 12px; font-size: 18px; cursor: pointer;
+    ">➤</button>
+  </form>
+</div>
+
+<style>
+  #aiFab:hover { transform: scale(1.08); }
+  .ai-msg.user {
+    background: #4a90d9 !important; color: #fff !important;
+    border-radius: 15px 15px 4px 15px !important;
+    align-self: flex-end !important;
+  }
+  .ai-msg.bot { align-self: flex-start; }
+  .ai-typing { display:flex; gap:4px; padding:14px 18px; }
+  .ai-typing span {
+    width:8px; height:8px; border-radius:50%; background:#999;
+    animation: aiBounce 1.4s infinite;
+  }
+  .ai-typing span:nth-child(2){ animation-delay:.2s; }
+  .ai-typing span:nth-child(3){ animation-delay:.4s; }
+  @keyframes aiBounce {
+    0%,60%,100%{ transform:translateY(0); opacity:.5; }
+    30%{ transform:translateY(-8px); opacity:1; }
+  }
+</style>
+
+<script>
+/* ================= چت‌بات دیپ‌سیک ================= */
+(function () {
+  const fab = document.getElementById('aiFab');
+  const chat = document.getElementById('aiChat');
+  const closeBtn = document.getElementById('aiClose');
+  const form = document.getElementById('aiForm');
+  const input = document.getElementById('aiInput');
+  const messages = document.getElementById('aiMessages');
+
+  // باز/بسته کردن
+  fab.addEventListener('click', () => {
+    const isOpen = chat.style.display === 'flex';
+    chat.style.display = isOpen ? 'none' : 'flex';
+    if (!isOpen) input.focus();
+  });
+  closeBtn.addEventListener('click', () => chat.style.display = 'none');
+
+  // افزودن پیام
+  function addMsg(text, who) {
+    const el = document.createElement('div');
+    el.className = 'ai-msg ' + who;
+    el.style.cssText = who === 'user'
+      ? 'background:#4a90d9; color:#fff; padding:12px 15px; border-radius:15px 15px 4px 15px; max-width:85%; font-size:14px; align-self:flex-end; line-height:1.7;'
+      : 'background:var(--card,#fff); padding:12px 15px; border-radius:15px 15px 15px 4px; max-width:85%; font-size:14px; align-self:flex-start; box-shadow:0 2px 8px rgba(0,0,0,.06); line-height:1.7;';
+    el.innerHTML = text;
+    messages.appendChild(el);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  // تایپینگ
+  function showTyping() {
+    const el = document.createElement('div');
+    el.className = 'ai-msg bot ai-typing-wrap';
+    el.innerHTML = '<div class="ai-typing"><span></span><span></span><span></span></div>';
+    messages.appendChild(el);
+    messages.scrollTop = messages.scrollHeight;
+    return el;
+  }
+
+  /* ============ مغز چت‌بات ============ */
   const knowledge = [
     {
       keys: ['سلام', 'درود', 'hi', 'hello', 'وقت بخیر'],
@@ -232,6 +395,9 @@
       const reply = getBotReply(text);
       addMsg(reply, 'bot');
     }, 700 + Math.random() * 500);
+  });
+})();
+</script>
   });
 })();
 </script>
