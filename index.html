@@ -1,1255 +1,270 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-<!-- بخش تیزر ایتا در سایت زردآلو -->
-<div style="max-width: 400px; margin: 20px auto; background: #fff8e8; border: 2px solid #ff9800; border-radius: 16px; padding: 20px; text-align: center; box-shadow: 0 4px 15px rgba(255,152,0,0.2); font-family: Tahoma, sans-serif;">
-    <div style="font-size: 40px; margin-bottom: 10px;">📺</div>
-    <h3 style="color: #e65100; margin: 0 0 10px 0; font-size: 18px;">تیزر اختصاصی زردآلو در ایتا</h3>
-    <p style="color: #666; font-size: 14px; margin-bottom: 15px; line-height: 1.5;">
-        برای تماشای تیزر جذاب ما با یک کلیک وارد کانال ایتا شوید!
-    </p>
-    <a href="https://eitaa.com/گروه مدیران زردآلو/𝒛𝒂𝒓𝒅𝒂𝒍𝒐𝒐 𝒎𝒂𝒏𝒂𝒈𝒆𝒓𝒔 𝑪𝒉𝒂𝒏𝒆𝒍/1061
-" target="_blank" style="display: inline-block; background: #ff9800; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: background 0.2s;">
-        مشاهده تیزر در ایتا 🚀
-    </a>
-</div>
-<div style="max-width: 500px; margin: 20px auto; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.15);">
-    <video controls style="width: 100%; display: block; background: #000;">
-        <source src="ZARDALOO.mp4" type="video/mp4">
-        مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.
-    </video>
-</div>
-
-<audio controls preload="none" style="width:94%;margin:0% 3%;"><source type="audio/mp3" src="https://kashanmusics.ir/wp-content/uploads/2025/04/Siavash-Ghomayshi-Hasrat-kashanmusics.ir-320.mp3"><a href="https://kashanmusics.ir" target="_blank">دانلود آهنگ</a></audio>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script type="text/javascript">
-  window.AISupportWidget={id:"ff21bb38b2fc45bc",base:"https://ai-support.ir/panel",themeAuto:true};
-  !function(){var d=document,s=d.createElement("script");s.async=!0;s.src="https://ai-support.ir/panel"+"/widget/aisupport-widget.js?v=4";d.head.appendChild(s);}();
-</script>
- 
-        <
-    </div>
-</div>
-
-<!-- دکمه شناور چت‌جی‌پی‌تی زردآلو در پایین چپ -->
-<div id="zardaloo-chatgpt-widget" style="position: fixed; bottom: 20px; left: 20px; z-index: 99999; font-family: Tahoma, sans-serif; zoom: 1; transform: none;">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>زردآلو | با زردآلو خرید راحته!</title>
+  <meta name="description" content="زردآلو یک بازار آنلاین برای خرید و فروش کالا است. سبد خرید، مدیریت، بازار و ثبت کالا.">
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: Tahoma, sans-serif; }
+    body { background: #fffbe6; color: #333; line-height: 1.8; }
     
-    <!-- دکمه با آرم چت‌جی‌پی‌تی -->
-    <button onclick="toggleZardalooChat()" style="background: #10a37f; color: white; border: none; border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: transform 0.2s;">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" fill="white"/>
-        </svg>
-    </button>
-    
-    <!-- پنجره چت -->
-    <div id="z-chat-box" style="display: none; width: 330px; height: 480px; background: white; border: 2px solid #10a37f; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); flex-direction: column; overflow: hidden; position: absolute; bottom: 75px; left: 0; zoom: 1; transform: none;">
-        
-        <!-- هدر چت‌بات -->
-        <div style="background: #10a37f; color: white; padding: 12px; font-weight: bold; text-align: center; display: flex; justify-content: space-between; align-items: center;">
-            <span>هوش مصنوعی زردآلو (ChatGPT)</span>
-            <span onclick="toggleZardalooChat()" style="cursor: pointer; font-size: 18px;">&times;</span>
-        </div>
-        
-        <!-- پیام‌ها -->
-        <div id="z-chat-messages" style="flex: 1; padding: 12px; overflow-y: auto; font-size: 14px; direction: rtl; text-align: right; background: #f9f9f9;">
-            <div style="margin: 6px 0; background: #e2f8f0; padding: 8px 12px; border-radius: 8px; color: #005c36;">
-                سلام عرفان عزیز! من دستیار جامع زردآلوم 🍋. از ثبت کالا، سبد خرید، مدیریت یا افراد سایت هر چی می‌خوای بپرس تا دقیق جواب بدم!
-            </div>
-        </div>
-        
-        <!-- بخش ارسال پیام -->
-        <div style="padding: 10px; border-top: 1px solid #ddd; background: white; display: flex;">
-            <input type="text" id="z-user-input" placeholder="سوال خود را بپرسید..." style="flex: 1; border: 1px solid #ccc; padding: 8px; border-radius: 6px; outline: none; font-size: 14px;" onkeypress="if(event.key === 'Enter') sendZardalooMessage()">
-            <button onclick="sendZardalooMessage()" style="background: #10a37f; color: white; border: none; padding: 8px 14px; margin-right: 6px; border-radius: 6px; cursor: pointer; font-weight: bold;">ارسال</button>
-        </div>
-    </div>
-</div>
+    header {
+      background: linear-gradient(135deg, #f9a825, #f57f17);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      position: relative;
+    }
+    header h1 { font-size: 2rem; margin-bottom: 6px; }
+    header p { font-size: 1rem; opacity: 0.95; }
 
-<script>
-function toggleZardalooChat() {
-    const box = document.getElementById('z-chat-box');
-    box.style.display = box.style.display === 'flex' ? 'none' : 'flex';
-}
+    /* دکمه صدا */
+    #soundToggle {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      z-index: 9999;
+      background: #fff;
+      color: #f57f17;
+      border: none;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      font-size: 22px;
+      cursor: pointer;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+    }
+    #soundToggle:hover { transform: scale(1.1); }
 
-function sendZardalooMessage() {
-    const input = document.getElementById('z-user-input');
-    const messages = document.getElementById('z-chat-messages');
-    let q = input.value.trim();
-    if (!q) return;
+    nav {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      background: #fff;
+      padding: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    nav a {
+      text-decoration: none;
+      color: #f57f17;
+      font-weight: bold;
+      padding: 8px 16px;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+    nav a:hover { background: #fff3cd; }
 
-    messages.innerHTML += `<div style="margin: 6px 0; text-align: left;"><span style="background: #e0e0e0; padding: 6px 10px; border-radius: 8px; display: inline-block; color: #333;">${q}</span></div>`;
-    input.value = '';
-    messages.scrollTop = messages.scrollHeight;
+    .hero {
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .hero h2 { font-size: 1.8rem; color: #f57f17; margin-bottom: 15px; }
+    .hero p { max-width: 600px; margin: 0 auto 20px; }
 
-    setTimeout(() => {
-        let reply = getZardalooAIResponse(q);
-        messages.innerHTML += `<div style="margin: 6px 0;"><span style="background: #e2f8f0; padding: 8px 12px; border-radius: 8px; display: inline-block; color: #005c36; line-height: 1.6;">${reply}</span></div>`;
-        messages.scrollTop = messages.scrollHeight;
-    }, 400);
-}
-
-function getZardalooAIResponse(question) {
-    let q = question.toLowerCase().replace(/\u200c/g, ' ').trim();
-
-    // ⭐ سلام و احوال‌پرسی — همیشه اول چک میشه
-    if (/^(سلام|سلام سلام|درود|هی|های|hello|hi|salam)\b/.test(q) || q.includes('سلام') || q.includes('درود')) {
-        return "سلام‌علیکم و درود! 😄🍋 خوش اومدی به چت هوشمند زردآلو! هر سوالی دربارهٔ بازار، ثبت کالا، سبد خرید، پیام‌رسان، گزارش فروشنده یا مدیریت داری، من اینجام! بفرما بپرس 💛";
+    /* ✅ جعبه ویدیو آپارات */
+    .video-box {
+      max-width: 720px;
+      margin: 0 auto;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+      background: #000;
     }
-    if (q.includes('خوبی') || q.includes('چطوری') || q.includes('حال شما') || q.includes('چه خبر')) {
-        return "من همیشه‌همیشه شارژم و سرحالم! ⚡ چون زردآلوی شیرینم! 😄 تو خوبی؟ سوالی دربارهٔ سایت داری، من آماده‌ام! 💛";
-    }
-    if (q.includes('ممنون') || q.includes('مرسی') || q.includes('سپاس') || q.includes('متشکر')) {
-        return "خواهش می‌کنم عزیز! وظیفه‌ست! 😊🍋 هر وقت چیزی خواستی من همیشه پایین‌چپ صفحم و منتظرتم! 🧡";
-    }
-
-    // سازنده و تشکرها
-    if (q.includes('سازنده') || q.includes('عرفان') || q.includes('کی ساخته')) {
-        return "سایت خفن زردآلو توسط مربی کاربلد و برنامه‌نویس باذوق، **عرفان ریاحی** ساخته شده! 🧑🏻‍💻💛<br><br><b>تشکر ویژه از:</b> جناب آقای شهاب‌الدین ریاحی، دکتر عباس امیدی، زارعی، کوشان طلائی، سرکار خانم ملیحه همت‌گیر، سپهر میر قادری، سید ابوالفضل صمصام شریعت، محمد پارسا آیتی، محمد طاها نیرومند، قاسمی، کیان عسگری و مانی شیروی.";
-    }
-    // شعار
-    if (q.includes('شعار')) {
-        return "شعار رسمی سایت اینه: «با زردآلو خرید راحته!» 💛";
-    }
-    // ثبت کالا
-    if (q.includes('ثبت کالا') || q.includes('فروش کالا') || q.includes('کالا ثبت')) {
-        return "برای ثبت کالا به این اطلاعات نیاز داری:<br>1️⃣ نام کالا<br>2️⃣ قیمت (حتماً به ریال)<br>3️⃣ نام فروشنده و شماره تماس فروشنده<br>4️⃣ توضیحات<br>🎁 همچنین می‌تونی مشخص کنی که کالا هدیه است و براش «توضیحات هدیه» بنویسی!";
-    }
-    // سبد خرید و تخفیف
-    if (q.includes('سبد خرید') || q.includes('تخفیف')) {
-        return "در بخش **سبد خرید** می‌تونید کالاهای انتخابی رو مدیریت کنید و با وارد کردن **کد تخفیف** از تخفیف‌ها استفاده کنید. (جزئیات محاسبه تخفیف در اطلاعات سایت ذکر نشده).";
-    }
-    // پیام‌رسان
-    if (q.includes('پیام')) {
-        return "بخش پیام‌رسان زردآلو خیلی سادس: کافیه **شماره زردآلو گیرنده** و **متن پیام** رو وارد کنی تا پیام ارسال بشه! 📨";
-    }
-    // گزارش فروشنده
-    if (q.includes('گزارش') || q.includes('شکایت') || q.includes('تخلف')) {
-        return "برای ثبت گزارش فروشنده باید این سه مورد رو وارد کنی:<br>1️⃣ شماره زردآلو فروشنده<br>2️⃣ دلیل گزارش<br>3️⃣ توضیحات تکمیلی";
-    }
-    // مدیریت
-    if (q.includes('مدیریت') || q.includes('ادمین')) {
-        return "بخش مدیریت شامل **شماره مدیریت**، **رمز مدیریت** و نمایش **تعداد کل کالاها**ست. (رمزها و اطلاعات ورود کاملاً محرمانه‌ان و من بهشون دسترسی ندارم! 🔒)";
-    }
-    // پروفایل
-    if (q.includes('پروفایل') || q.includes('حساب')) {
-        return "پروفایل در زردآلو شامل این موارد میشه: نام، شماره تماس، و شماره زردآلو.";
+    .video-box iframe {
+      display: block;
+      border: none;
+      width: 100%;
+      height: 360px;
     }
 
-    // پیش‌فرض برای سوالات نامشخص
-    return "عجب سوال باحالی! اما این جزئیات در اطلاعات فعلی سایت زردآلو مشخص نیست. می‌تونی درباره بازار، ثبت کالا، سبد خرید، پیام‌رسان یا مدیریت بپرسی! 😉🍋";
-}
-</script>
-
-
-
-    <title>زردآلو | با زردآلو خرید راحته!</title>
-
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: Tahoma, Arial, sans-serif;
-            background: #fff;
-            color: #222;
-        }
-
-        button,
-        input,
-        textarea,
-        select {
-            font-family: inherit;
-        }
-
-        button {
-            cursor: pointer;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        /* =========================================
-           صفحه اول
-        ========================================= */
-
-        #welcomeScreen {
-            min-height: 100vh;
-            background: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 25px;
-        }
-
-        .welcome-box {
-            width: 100%;
-            max-width: 650px;
-            text-align: center;
-            padding: 55px 30px;
-            border: 2px solid #ffd400;
-            border-radius: 30px;
-            background: #fff;
-            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.08);
-        }
-
-        .welcome-logo {
-            width: 105px;
-            height: 105px;
-            background: #ffd400;
-            border-radius: 50%;
-            margin: 0 auto 25px;
-        }
-
-        .welcome-box h1 {
-            font-size: 38px;
-            margin-bottom: 12px;
-        }
-
-        .welcome-box h2 {
-            font-size: 24px;
-            margin-bottom: 35px;
-            color: #555;
-        }
-
-        .welcome-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .welcome-button {
-            border: 2px solid #ffd400;
-            background: #ffd400;
-            color: #222;
-            padding: 16px;
-            border-radius: 15px;
-            font-size: 17px;
-            font-weight: bold;
-            transition: 0.2s ease;
-        }
-
-        .welcome-button:hover {
-            background: #222;
-            color: #ffd400;
-            border-color: #222;
-            transform: translateY(-2px);
-        }
-
-        /* =========================================
-           پروفایل
-        ========================================= */
-
-        #profileSetup {
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            background: #fff;
-        }
-
-        .profile-box {
-            width: 100%;
-            max-width: 480px;
-            background: #fff;
-            border: 2px solid #ffd400;
-            border-radius: 24px;
-            padding: 30px;
-            box-shadow: 0 10px 35px rgba(0,0,0,.08);
-            text-align: center;
-        }
-
-        .main-logo {
-            width: 90px;
-            height: 90px;
-            background: #ffd400;
-            border-radius: 50%;
-            margin: 0 auto 18px;
-        }
-
-        .profile-box h1 {
-            margin-bottom: 8px;
-        }
-
-        .profile-box > p {
-            color: #777;
-            margin-bottom: 22px;
-        }
-
-        .profile-preview {
-            width: 115px;
-            height: 115px;
-            border-radius: 50%;
-            border: 4px solid #ffd400;
-            background: #fff7b0;
-            margin: 0 auto 18px;
-            overflow: hidden;
-
-            display: flex;
-            justify-content: center;
-            align-items: center;
-
-            font-size: 50px;
-        }
-
-        .profile-preview img,
-        .avatar-display img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-
-        .avatar-options {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 6px;
-            margin-bottom: 15px;
-        }
-
-        .avatar-option {
-            height: 45px;
-            border: none;
-            border-radius: 12px;
-            background: #fff3a0;
-            font-size: 24px;
-        }
-
-        .avatar-option:hover {
-            background: #ffd400;
-        }
-
-        .image-picker {
-            display: block;
-            background: #f2f2f2;
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 18px;
-            cursor: pointer;
-        }
-
-        .field {
-            margin-bottom: 15px;
-            text-align: right;
-        }
-
-        .field label {
-            display: block;
-            margin-bottom: 7px;
-            font-weight: bold;
-        }
-
-        .field input,
-        .field textarea,
-        .field select {
-            width: 100%;
-            border: 1px solid #ddd;
-            border-radius: 12px;
-            padding: 13px;
-            outline: none;
-            background: #fff;
-        }
-
-        .field textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        .field input:focus,
-        .field textarea:focus,
-        .field select:focus {
-            border-color: #ffd400;
-        }
-
-        .yellow-button {
-            width: 100%;
-            border: none;
-            border-radius: 13px;
-            background: #ffd400;
-            padding: 14px;
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        .yellow-button:hover {
-            background: #f0c500;
-        }
-
-        .red-button {
-            border: none;
-            border-radius: 10px;
-            padding: 10px 14px;
-            background: #e53935;
-            color: white;
-        }
-
-        /* =========================================
-           APP
-        ========================================= */
-
-        #app {
-            min-height: 100vh;
-        }
-
-        header {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background: white;
-            border-bottom: 1px solid #eee;
-        }
-
-        .header-inner {
-            max-width: 1200px;
-            margin: auto;
-            padding: 10px 18px;
-
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 21px;
-            font-weight: bold;
-        }
-
-        .brand-logo {
-            width: 43px;
-            height: 43px;
-            border-radius: 50%;
-            background: #ffd400;
-        }
-
-        .header-avatar {
-            width: 52px;
-            height: 52px;
-            border-radius: 50%;
-            border: 3px solid #ffd400;
-            background: #fff7b0;
-            overflow: hidden;
-
-            display: flex;
-            justify-content: center;
-            align-items: center;
-
-            font-size: 25px;
-        }
-
-        nav {
-            max-width: 1200px;
-            margin: auto;
-            padding: 10px 15px;
-
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-        }
-
-        nav button {
-            border: none;
-            background: #f3f3f3;
-            padding: 10px 15px;
-            border-radius: 12px;
-            white-space: nowrap;
-        }
-
-        nav button:hover {
-            background: #ffd400;
-        }
-
-        main {
-            max-width: 1200px;
-            margin: auto;
-            padding: 25px 15px 50px;
-        }
-
-        .page {
-            display: none;
-        }
-
-        .page.active {
-            display: block;
-        }
-
-        .page-title {
-            margin-bottom: 20px;
-        }
-
-        .card {
-            background: white;
-            border: 1px solid #eee;
-            border-radius: 18px;
-            padding: 20px;
-            margin-bottom: 18px;
-            box-shadow: 0 5px 20px rgba(0,0,0,.04);
-        }
-
-        .home-profile {
-            display: flex;
-            align-items: center;
-            gap: 22px;
-        }
-
-        .home-avatar {
-            width: 115px;
-            height: 115px;
-            border-radius: 50%;
-            border: 4px solid #ffd400;
-            background: #fff7b0;
-            overflow: hidden;
-
-            display: flex;
-            justify-content: center;
-            align-items: center;
-
-            font-size: 50px;
-            flex-shrink: 0;
-        }
-
-        .profile-info p {
-            margin-bottom: 10px;
-        }
-
-        /* =========================================
-           محصولات
-        ========================================= */
-
-        .filters {
-            display: grid;
-            grid-template-columns: repeat(auto-fit,minmax(180px,1fr));
-            gap: 10px;
-        }
-
-        .filters input,
-        .filters select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 12px;
-        }
-
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill,minmax(230px,1fr));
-            gap: 15px;
-        }
-
-        .product-card {
-            border: 1px solid #eee;
-            border-radius: 18px;
-            padding: 17px;
-            background: white;
-        }
-
-        .product-card h3 {
-            margin-bottom: 10px;
-        }
-
-        .product-price {
-            font-weight: bold;
-            margin: 10px 0;
-        }
-
-        .gift {
-            color: #16852b;
-            font-weight: bold;
-        }
-
-        .product-card button {
-            margin-top: 10px;
-        }
-
-        .cart-item {
-            border-bottom: 1px solid #eee;
-            padding: 15px 0;
-        }
-
-        .cart-summary {
-            background: #fff8b5;
-            border-radius: 16px;
-            padding: 18px;
-            margin-top: 20px;
-            line-height: 2;
-        }
-
-        .message-item {
-            padding: 14px;
-            border-radius: 12px;
-            background: #f4f4f4;
-            margin-bottom: 10px;
-        }
-
-        footer {
-            border-top: 1px solid #eee;
-            text-align: center;
-            padding: 25px;
-            color: #777;
-        }
-
-        @media (max-width: 600px) {
-            .avatar-options {
-                grid-template-columns: repeat(4,1fr);
-            }
-
-            .home-profile {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .profile-box {
-                padding: 22px;
-            }
-
-            .welcome-buttons {
-                grid-template-columns: 1fr;
-            }
-
-            .welcome-box h1 {
-                font-size: 30px;
-            }
-        }
-    </style>
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      padding: 30px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .card {
+      background: white;
+      border-radius: 14px;
+      padding: 24px;
+      text-align: center;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+      transition: transform 0.2s;
+    }
+    .card:hover { transform: translateY(-5px); }
+    .card .icon { font-size: 2.2rem; margin-bottom: 10px; }
+    .card h3 { color: #f57f17; margin-bottom: 8px; }
+
+    .profile {
+      max-width: 600px;
+      margin: 20px auto;
+      background: white;
+      padding: 24px;
+      border-radius: 14px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+    .profile h2 { color: #f57f17; margin-bottom: 15px; }
+    .profile p { margin: 6px 0; }
+
+    footer {
+      background: #f57f17;
+      color: white;
+      text-align: center;
+      padding: 30px 20px;
+      margin-top: 40px;
+    }
+    footer h3 { margin-bottom: 12px; }
+    footer ul { list-style: none; font-size: 0.9rem; opacity: 0.95; }
+    footer li { margin: 4px 0; }
+    footer .credit { margin-top: 18px; font-size: 0.85rem; opacity: 0.85; }
+
+    /* فایل صوتی مخفی */
+    #bgMusic { display: none; }
+  </style>
 </head>
-
 <body>
 
-<!-- =========================================
-     صفحه اول
-========================================= -->
+  <!-- ✅ آهنگ پس‌زمینه -->
+  <audio id="bgMusic" loop>
+    <source src="music/bamdad-khomar.mp3" type="audio/mpeg">
+    <!-- ⬆️ این مسیر رو به فایل آهنگ خودت تغییر بده -->
+  </audio>
 
-<section id="welcomeScreen">
+  <!-- ✅ دکمه قطع/وصل صدا -->
+  <button id="soundToggle" title="قطع/وصل صدا">🔊</button>
 
-    <div class="welcome-box">
+  <header>
+    <h1>🍑 زردآلو</h1>
+    <p>با زردآلو خرید راحته!</p>
+  </header>
 
-        <div class="welcome-logo"></div>
+  <nav>
+    <a href="#market">بازار زردآلو</a>
+    <a href="#cart">سبد خرید</a>
+    <a href="#messenger">پیام‌رسان</a>
+    <a href="#report">گزارش فروشنده</a>
+    <a href="#manage">مدیریت</a>
+    <a href="#about">درباره زردآلو</a>
+  </nav>
 
-        <h1>زردآلو</h1>
+  <section class="hero">
+    <h2>بازار آنلاین خرید و فروش کالا</h2>
+    <p>زردآلو یک بازار آنلاین برای خرید و فروش کالا است. در این بازار سبد خرید، مدیریت، بازار و ثبت کالا امکان‌پذیر است.</p>
 
-        <h2>با زردآلو خرید راحته!</h2>
-
-        <div class="welcome-buttons">
-
-            <button
-                class="welcome-button"
-                onclick="openProfileFromWelcome()"
-            >
-                ورود به فروشگاه
-            </button>
-
-            <button
-                class="welcome-button"
-                onclick="openMarketFromWelcome()"
-            >
-                بازار
-            </button>
-
-        </div>
-
+    <!-- ✅ ویدیوی آپارات جای تیزر -->
+    <div class="video-box">
+      <iframe src="https://www.aparat.com/video/video/embed/videohash/ggl6u79/vt/frame"
+              allowfullscreen="true"
+              webkitallowfullscreen="true"
+              mozallowfullscreen="true"
+              width="100%" height="360" frameborder="0">
+      </iframe>
     </div>
+  </section>
 
-</section>
+  <section class="profile" id="profile">
+    <h2>👤 پروفایل من</h2>
+    <p>نام: ---</p>
+    <p>شماره تماس: ---</p>
+    <p>شماره زردآلو: ---</p>
+  </section>
 
-
-<!-- =========================================
-     پروفایل
-========================================= -->
-
-<section id="profileSetup" class="hidden">
-
-    <div class="profile-box">
-
-        <div class="main-logo"></div>
-
-        <h1>زردآلو</h1>
-
-        <p>
-            برای ورود، پروفایل خودت را بساز.
-        </p>
-
-        <div
-            id="profilePreview"
-            class="profile-preview"
-        >
-            👤
-        </div>
-
-        <div class="avatar-options">
-
-            <button class="avatar-option" onclick="selectProfile('⚽')">⚽</button>
-            <button class="avatar-option" onclick="selectProfile('🏐')">🏐</button>
-            <button class="avatar-option" onclick="selectProfile('☕')">☕</button>
-            <button class="avatar-option" onclick="selectProfile('🧪')">🧪</button>
-            <button class="avatar-option" onclick="selectProfile('🏪')">🏪</button>
-            <button class="avatar-option" onclick="selectProfile('🥪')">🥪</button>
-            <button class="avatar-option" onclick="selectProfile('🍕')">🍕</button>
-
-        </div>
-
-        <label class="image-picker">
-
-            🖼️ انتخاب عکس از دستگاه
-
-            <input
-                id="profileImageInput"
-                type="file"
-                accept="image/*"
-                hidden
-                onchange="loadProfileImage(event)"
-            >
-
-        </label>
-
-        <div class="field">
-            <label>نام</label>
-            <input
-                id="firstName"
-                type="text"
-                placeholder="نام شما"
-            >
-        </div>
-
-        <div class="field">
-            <label>شماره تماس</label>
-            <input
-                id="firstPhone"
-                type="tel"
-                placeholder="شماره تماس"
-            >
-        </div>
-
-        <div class="field">
-            <label>شماره زردآلو</label>
-            <input
-                id="firstZardaloo"
-                type="text"
-                placeholder="شماره زردآلو"
-            >
-        </div>
-
-        <button
-            class="yellow-button"
-            onclick="enterZardaloo()"
-        >
-            ورود به زردآلو
-        </button>
-
+  <section class="cards">
+    <div class="card" id="market">
+      <div class="icon">🛒</div>
+      <h3>بازار زردآلو</h3>
+      <p>خرید و فروش کالا در بازار آنلاین</p>
     </div>
-
-</section>
-
-
-<!-- =========================================
-     برنامه
-========================================= -->
-
-<div id="app" class="hidden">
-
-    <header>
-
-        <div class="header-inner">
-
-            <div class="brand">
-
-                <div class="brand-logo"></div>
-
-                <span>زردآلو</span>
-
-            </div>
-
-            <div
-                id="headerProfileImage"
-                class="header-avatar"
-            >
-                👤
-            </div>
-
-        </div>
-
-    </header>
-
-
-    <nav>
-
-        <button onclick="showPage('home')">خانه</button>
-        <button onclick="showPage('market')">بازار</button>
-        <button onclick="showPage('register')">ثبت کالا</button>
-        <button onclick="showPage('cart')">سبد خرید</button>
-        <button onclick="showPage('messages')">پیام‌رسان</button>
-        <button onclick="showPage('report')">گزارش فروشنده</button>
-        <button onclick="showPage('admin')">مدیریت</button>
-        <button onclick="showPage('about')">درباره</button>
-
-    </nav>
-
-
-    <main>
-
-        <!-- HOME -->
-
-        <section id="home" class="page active">
-
-            <h2 class="page-title">
-                پروفایل من
-            </h2>
-
-            <div class="card">
-
-                <div class="home-profile">
-
-                    <div
-                        id="homeProfileImage"
-                        class="home-avatar"
-                    >
-                        👤
-                    </div>
-
-                    <div class="profile-info">
-
-                        <p>
-                            <strong>نام:</strong>
-                            <span id="homeName">---</span>
-                        </p>
-
-                        <p>
-                            <strong>شماره تماس:</strong>
-                            <span id="homePhone">---</span>
-                        </p>
-
-                        <p>
-                            <strong>شماره زردآلو:</strong>
-                            <span id="homeZardaloo">---</span>
-                        </p>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- MARKET -->
-
-        <section id="market" class="page">
-
-            <h2 class="page-title">
-                بازار زردآلو
-            </h2>
-
-            <div class="card">
-
-                <div class="filters">
-
-                    <input
-                        id="searchName"
-                        placeholder="جستجوی نام کالا"
-                    >
-
-                    <input
-                        id="minPrice"
-                        type="number"
-                        placeholder="حداقل قیمت"
-                    >
-
-                    <input
-                        id="maxPrice"
-                        type="number"
-                        placeholder="حداکثر قیمت"
-                    >
-
-                    <input
-                        id="sellerFilter"
-                        placeholder="نام فروشنده"
-                    >
-
-                    <select id="giftFilter">
-
-                        <option value="">همه کالاها</option>
-                        <option value="yes">فقط هدیه</option>
-                        <option value="no">بدون هدیه</option>
-
-                    </select>
-
-                </div>
-
-                <p id="marketStatus"></p>
-
-            </div>
-
-            <div
-                id="products"
-                class="products-grid"
-            ></div>
-
-        </section>
-
-
-        <!-- REGISTER -->
-
-        <section id="register" class="page">
-
-            <h2 class="page-title">
-                ثبت کالا
-            </h2>
-
-            <div class="card">
-
-                <div class="field">
-                    <label>نام کالا</label>
-                    <input id="productName" type="text">
-                </div>
-
-                <div class="field">
-                    <label>قیمت به ریال</label>
-                    <input id="productPrice" type="number">
-                </div>
-
-                <div class="field">
-                    <label>نام فروشنده</label>
-                    <input id="sellerName" type="text">
-                </div>
-
-                <div class="field">
-                    <label>شماره تماس فروشنده</label>
-                    <input id="sellerPhone" type="tel">
-                </div>
-
-                <div class="field">
-                    <label>توضیحات</label>
-                    <textarea id="productDescription"></textarea>
-                </div>
-
-                <div class="field">
-
-                    <label>
-                        <input
-                            id="isGift"
-                            type="checkbox"
-                            onchange="toggleGiftDescription()"
-                        >
-                        کالا هدیه است
-                    </label>
-
-                </div>
-
-                <div
-                    id="giftDescriptionBox"
-                    class="field hidden"
-                >
-
-                    <label>توضیحات هدیه</label>
-
-                    <textarea id="giftDescription"></textarea>
-
-                </div>
-
-                <button
-                    id="registerProductButton"
-                    class="yellow-button"
-                    onclick="registerProduct()"
-                >
-                    ثبت کالا
-                </button>
-
-                <p id="registerMessage"></p>
-
-            </div>
-
-        </section>
-
-
-        <!-- CART -->
-
-        <section id="cart" class="page">
-
-            <h2 class="page-title">
-                سبد خرید
-            </h2>
-
-            <div class="card">
-
-                <div class="field">
-
-                    <label>کد تخفیف</label>
-
-                    <input
-                        id="cartDiscountCode"
-                        placeholder="کد تخفیف"
-                    >
-
-                </div>
-
-                <button
-                    class="yellow-button"
-                    onclick="applyCartDiscount()"
-                >
-                    اعمال تخفیف
-                </button>
-
-                <p id="cartDiscountMessage"></p>
-
-            </div>
-
-            <div id="cartItems"></div>
-
-            <div
-                id="cartSummary"
-                class="cart-summary"
-            ></div>
-
-        </section>
-
-
-        <!-- MESSAGES -->
-
-        <section id="messages" class="page">
-
-            <h2 class="page-title">
-                پیام‌رسان
-            </h2>
-
-            <div class="card">
-
-                <div class="field">
-
-                    <label>شماره زردآلو گیرنده</label>
-
-                    <input id="messageReceiver">
-
-                </div>
-
-                <div class="field">
-
-                    <label>پیام</label>
-
-                    <textarea id="messageText"></textarea>
-
-                </div>
-
-                <button
-                    class="yellow-button"
-                    onclick="sendMessage()"
-                >
-                    ارسال پیام
-                </button>
-
-                <p id="messageSendStatus"></p>
-
-            </div>
-
-            <div id="messageList"></div>
-
-        </section>
-
-
-        <!-- REPORT -->
-
-        <section id="report" class="page">
-
-            <h2 class="page-title">
-                گزارش فروشنده
-            </h2>
-
-            <div class="card">
-
-                <div class="field">
-
-                    <label>شماره زردآلو فروشنده</label>
-
-                    <input id="reportSellerNumber">
-
-                </div>
-
-                <div class="field">
-
-                    <label>دلیل</label>
-
-                    <select id="reportReason">
-
-                        <option>کلاهبرداری</option>
-                        <option>اطلاعات جعلی</option>
-                        <option>مشکل در معامله</option>
-                        <option>مزاحمت</option>
-                        <option>سایر</option>
-
-                    </select>
-
-                </div>
-
-                <div class="field">
-
-                    <label>توضیحات</label>
-
-                    <textarea id="reportDescription"></textarea>
-
-                </div>
-
-                <button
-                    class="yellow-button"
-                    onclick="submitReport()"
-                >
-                    ارسال گزارش
-                </button>
-
-                <p id="reportMessage"></p>
-
-            </div>
-
-        </section>
-
-
-        <!-- ADMIN -->
-
-        <section id="admin" class="page">
-
-            <h2 class="page-title">
-                مدیریت
-            </h2>
-
-            <div class="card">
-
-                <div class="field">
-
-                    <label>شماره مدیریت</label>
-
-                    <input id="adminNumber">
-
-                </div>
-
-                <div class="field">
-
-                    <label>رمز مدیریت</label>
-
-                    <input
-                        id="adminPassword"
-                        type="password"
-                    >
-
-                </div>
-
-                <button
-                    class="yellow-button"
-                    onclick="adminLogin()"
-                >
-                    ورود مدیریت
-                </button>
-
-                <p id="adminMessage"></p>
-
-            </div>
-
-            <div
-                id="adminPanel"
-                class="card hidden"
-            >
-
-                <p>
-                    تعداد کالاها:
-                    <strong id="adminProductCount">0</strong>
-                </p>
-
-                <br>
-
-                <button
-                    class="yellow-button"
-                    onclick="loadAdminProducts()"
-                >
-                    نمایش کالاها
-                </button>
-
-                <br><br>
-
-                <button
-                    class="yellow-button"
-                    onclick="loadAdminReports()"
-                >
-                    نمایش گزارش‌ها
-                </button>
-
-                <div id="adminContent"></div>
-
-            </div>
-
-        </section>
-
-
-        <!-- ABOUT -->
-
-        <section id="about" class="page">
-
-            <h2 class="page-title">
-                درباره زردآلو
-            </h2>
-
-            <div class="card">
-
-                <p>
-                    🧑🏻‍💻 سازنده: عرفان ریاحی
-                    <br>
-                    با تشکر از:
-                    <br>
-                    🌹 جناب آقای شهاب الدین ریاحی
-                    <br>
-                    🌹 جناب دکتر عباس امیدی
-                    <br>
-                    🌹 جناب آقای زارعی
-                    <br>
-                    🌹 جناب آقای کوشان طلائی
-                    <br>
-                    🌹 سرکار خانم ملیحه همت گیر
-                    <br>
-                    🌹 جناب آقای سپهر میر قادری
-                    <br>
-                    🌹 جناب آقای سید ابولفضل صمصام شریعت
-                    <br>
-                    🌹 جناب آقای محمد پارسا آیتی
-                    <br>
-                    🌹 جناب آقای محمد طاها نیرومند
-                    <br>
-                    🌹 جناب آقای قاسمی
-                    <br>
-                    🌹 جناب آقای کیان عسگری
-                    <br>
-                    🌹 جناب آقای مانی شیروی
-                </p>
-
-                <br>
-
-                <p>
-                    زردآلو یک بازار آنلاین برای خرید و فروش کالا است.
-                    در این بازار سبد خرید، مدیریت، بازار و ثبت کالا امکان‌پذیر است.
-                </p>
-
-                <br>
-
-                <p>
-                    با زردآلو خرید راحته!
-                </p>
-
-            </div>
-
-        </section>
-
-    </main>
-
-
-    <footer>
-        زردآلو | با زردآلو خرید راحته!
-    </footer>
-
-</div>
-
-
-<script src="script.js?v=8"></script>
+    <div class="card" id="cart">
+      <div class="icon">🧺</div>
+      <h3>سبد خرید</h3>
+      <p>کالاهای انتخابی خود را مدیریت کنید</p>
+    </div>
+    <div class="card" id="messenger">
+      <div class="icon">💬</div>
+      <h3>پیام‌رسان</h3>
+      <p>ارتباط با فروشندگان و خریداران</p>
+    </div>
+    <div class="card" id="report">
+      <div class="icon">📊</div>
+      <h3>گزارش فروشنده</h3>
+      <p>مشاهده آمار و گزارش فروش</p>
+    </div>
+    <div class="card" id="manage">
+      <div class="icon">⚙️</div>
+      <h3>مدیریت</h3>
+      <p>مدیریت کالاها و حساب کاربری</p>
+    </div>
+  </section>
+
+  <footer id="about">
+    <h3>درباره زردآلو</h3>
+    <p>🧑🏻‍💻 سازنده: عرفان ریاحی</p>
+    <ul>
+      <li>با تشکر از: جناب آقای شهاب‌الدین ریاحی</li>
+      <li>جناب دکتر عباس امیدی</li>
+      <li>جناب آقای زارعی</li>
+      <li>جناب آقای کوشان طلائی</li>
+      <li>سرکار خانم ملیحه همت‌گیر</li>
+      <li>جناب آقای سپهر میر قادری</li>
+      <li>جناب آقای سید ابوالفضل صمصام شریعت</li>
+      <li>جناب آقای محمد پارسا آیتی</li>
+      <li>جناب آقای محمد طاها نیرومند</li>
+      <li>جناب آقای قاسمی</li>
+      <li>جناب آقای کیان عسگری</li>
+      <li>جناب آقای مانی شیروی</li>
+    </ul>
+    <p class="credit">با زردآلو خرید راحته! 🍑</p>
+  </footer>
+
+  <!-- ✅ اسکریپت پخش آهنگ -->
+  <script>
+    const audio = document.getElementById('bgMusic');
+    const toggleBtn = document.getElementById('soundToggle');
+    audio.volume = 0.4;
+    let isPlaying = false;
+
+    function tryPlay() {
+      audio.play().then(() => {
+        isPlaying = true;
+        toggleBtn.textContent = '🔊';
+      }).catch(() => {
+        const onInteract = () => {
+          audio.play().then(() => {
+            isPlaying = true;
+            toggleBtn.textContent = '🔊';
+          }).catch(e => console.log('پخش نشد:', e));
+          document.removeEventListener('click', onInteract);
+          document.removeEventListener('touchstart', onInteract);
+        };
+        document.addEventListener('click', onInteract);
+        document.addEventListener('touchstart', onInteract);
+      });
+    }
+
+    tryPlay();
+
+    toggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (isPlaying) {
+        audio.pause();
+        isPlaying = false;
+        toggleBtn.textContent = '🔇';
+      } else {
+        audio.play().then(() => {
+          isPlaying = true;
+          toggleBtn.textContent = '🔊';
+        }).catch(err => console.log(err));
+      }
+    });
+  </script>
 
 </body>
 </html>
