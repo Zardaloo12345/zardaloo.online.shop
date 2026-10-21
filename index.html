@@ -34,10 +34,11 @@
       display: none !important;
     }
 
-    /* ================= صفحه ورود ================= */
+    /* ================= صفحه ورود (با آبی کبود) ================= */
     #welcomeScreen {
       min-height: 100vh;
-      background: #fff;
+      background: linear-gradient(135deg, #4a90d9, #6fb1e0, #8ec5e8);
+      box-shadow: inset 0 0 200px rgba(30, 80, 140, 0.35);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -49,10 +50,11 @@
       max-width: 650px;
       text-align: center;
       padding: 55px 30px;
-      border: 2px solid #ffd400;
+      border: 2px solid rgba(255, 255, 255, 0.5);
       border-radius: 30px;
-      background: #fff;
-      box-shadow: 0 15px 45px rgba(0, 0, 0, 0.08);
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 15px 45px rgba(0, 0, 0, 0.25);
     }
 
     .welcome-logo,
@@ -101,6 +103,34 @@
       color: #ffd400;
       border-color: #222;
       transform: translateY(-2px);
+    }
+
+    /* فرم ایمیل */
+    #emailForm {
+      margin-top: 20px;
+      display: none;
+    }
+
+    #emailForm input {
+      width: 100%;
+      padding: 14px;
+      border-radius: 13px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      margin-bottom: 12px;
+      outline: none;
+      text-align: center;
+    }
+
+    #emailForm input:focus {
+      border-color: #4a90d9;
+    }
+
+    #emailError {
+      color: #d32f2f;
+      font-size: 14px;
+      margin-top: 6px;
+      min-height: 18px;
     }
 
     /* ================= ساخت پروفایل ================= */
@@ -488,16 +518,24 @@
 </head>
 <body>
 
-  <!-- ================= صفحه خوش‌آمد ================= -->
+  <!-- ================= صفحه ورود ================= -->
   <section id="welcomeScreen">
     <div class="welcome-box">
       <div class="welcome-logo"></div>
       <h1>زردآلو</h1>
       <h2>با زردآلو خرید راحته!</h2>
-      <div class="welcome-buttons">
+
+      <div class="welcome-buttons" id="welcomeButtons">
         <button class="welcome-button" id="guestBtn">ورود میهمان</button>
         <button class="welcome-button" id="loginBtn">ورود</button>
       </div>
+
+      <!-- فرم ایمیل (فقط بعد از کلیک روی «ورود») -->
+      <form id="emailForm">
+        <input type="email" id="emailInput" placeholder="ایمیل خود را وارد کنید" required>
+        <button type="submit" class="yellow-button">تأیید و ورود</button>
+        <div id="emailError"></div>
+      </form>
     </div>
   </section>
 
@@ -605,9 +643,7 @@
             </select>
           </div>
         </div>
-        <div class="products-grid" id="productsGrid">
-          <!-- محصولات اینجا رندر می‌شوند -->
-        </div>
+        <div class="products-grid" id="productsGrid"></div>
       </section>
 
       <!-- سبد خرید -->
@@ -663,11 +699,15 @@
     const profileSetup = document.getElementById('profileSetup');
     const app = document.getElementById('app');
 
+    const welcomeButtons = document.getElementById('welcomeButtons');
     const guestBtn = document.getElementById('guestBtn');
     const loginBtn = document.getElementById('loginBtn');
+    const emailForm = document.getElementById('emailForm');
+    const emailInput = document.getElementById('emailInput');
+    const emailError = document.getElementById('emailError');
 
     /* ================= جریان ورود ================= */
-    // اگر قبلاً وارد شده، مستقیم برو به اپ
+    // اگر قبلاً وارد شده (میهمان یا ایمیل)، مستقیم برو به اپ
     const savedUser = localStorage.getItem('zardaloo_user');
     if (savedUser) {
       welcomeScreen.classList.add('hidden');
@@ -675,7 +715,7 @@
       loadProfile();
     }
 
-    // ورود میهمان → مستقیم برو به اپ
+    // ورود میهمان → مستقیم برو به اپ + ذخیره
     guestBtn.addEventListener('click', () => {
       localStorage.setItem('zardaloo_user', 'guest');
       welcomeScreen.classList.add('hidden');
@@ -683,10 +723,26 @@
       loadProfile();
     });
 
-    // ورود → برو به ساخت پروفایل (ایمیل/اطلاعات)
+    // ورود → نمایش فرم ایمیل
     loginBtn.addEventListener('click', () => {
+      welcomeButtons.style.display = 'none';
+      emailForm.style.display = 'block';
+      emailInput.focus();
+    });
+
+    // ثبت ایمیل
+    emailForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = emailInput.value.trim();
+      if (!email || !email.includes('@') || !email.includes('.')) {
+        emailError.textContent = 'لطفاً یک ایمیل معتبر وارد کنید.';
+        return;
+      }
+      emailError.textContent = '';
+      localStorage.setItem('zardaloo_user', email);
       welcomeScreen.classList.add('hidden');
-      profileSetup.classList.remove('hidden');
+      app.classList.remove('hidden');
+      loadProfile();
     });
 
     /* ================= ساخت پروفایل ================= */
@@ -758,7 +814,7 @@
       });
     });
 
-    /* ================= سبد خرید (نمونه ساده) ================= */
+    /* ================= بازار و سبد خرید ================= */
     const cartItems = document.getElementById('cartItems');
     const cartSummary = document.getElementById('cartSummary');
     const productsGrid = document.getElementById('productsGrid');
