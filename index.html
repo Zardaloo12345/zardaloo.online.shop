@@ -117,8 +117,8 @@
       <h1>زردآلو</h1>
       <h2>با زردآلو خرید راحته!</h2>
       <div class="welcome-buttons" id="welcomeButtons">
-        <button class="welcome-button" id="guestBtn">ورود میهمان</button>
-        <button class="welcome-button" id="loginBtn">ورود</button>
+        <button type="button" class="welcome-button" id="guestBtn">ورود میهمان</button>
+        <button type="button" class="welcome-button" id="loginBtn">ورود</button>
       </div>
       <form id="emailForm">
         <input type="email" id="emailInput" placeholder="ایمیل خود را وارد کنید" required>
@@ -137,13 +137,13 @@
       <p>برای ورود به زردآلو اطلاعاتت را کامل کن</p>
       <div class="profile-preview" id="avatarPreview">👤</div>
       <div class="avatar-options">
-        <button class="avatar-option" data-avatar="👤">👤</button>
-        <button class="avatar-option" data-avatar="🧑">🧑</button>
-        <button class="avatar-option" data-avatar="👩">👩</button>
-        <button class="avatar-option" data-avatar="🧔">🧔</button>
-        <button class="avatar-option" data-avatar="👨‍🦱">👨‍🦱</button>
-        <button class="avatar-option" data-avatar="👩‍🦰">👩‍🦰</button>
-        <button class="avatar-option" data-avatar="🧑‍🦳">🧑‍🦳</button>
+        <button type="button" class="avatar-option" data-avatar="👤">👤</button>
+        <button type="button" class="avatar-option" data-avatar="🧑">🧑</button>
+        <button type="button" class="avatar-option" data-avatar="👩">👩</button>
+        <button type="button" class="avatar-option" data-avatar="🧔">🧔</button>
+        <button type="button" class="avatar-option" data-avatar="👨‍🦱">👨‍🦱</button>
+        <button type="button" class="avatar-option" data-avatar="👩‍🦰">👩‍🦰</button>
+        <button type="button" class="avatar-option" data-avatar="🧑‍🦳">🧑‍🦳</button>
       </div>
       <label class="image-picker">
         انتخاب تصویر پروفایل
@@ -161,7 +161,7 @@
         <label for="zardalooNumber">شماره زردآلو</label>
         <input type="text" id="zardalooNumber" placeholder="شماره اختصاصی زردآلو">
       </div>
-      <button class="yellow-button" id="saveProfileBtn">ذخیره و ورود</button>
+      <button type="button" class="yellow-button" id="saveProfileBtn">ذخیره و ورود</button>
       <div id="profileStatus" style="margin-top:10px; font-size:14px;"></div>
     </div>
   </section>
@@ -175,14 +175,14 @@
       </div>
     </header>
     <nav>
-      <button data-page="homePage">خانه</button>
-      <button data-page="marketPage">بازار زردآلو</button>
-      <button data-page="cartPage">سبد خرید</button>
-      <button data-page="messengerPage">پیام‌رسان</button>
-      <button data-page="reportPage">گزارش فروشنده</button>
-      <button data-page="managePage">مدیریت</button>
-      <button data-page="addProductPage">ثبت کالا</button>
-      <button data-page="aboutPage">درباره زردآلو</button>
+      <button type="button" data-page="homePage">خانه</button>
+      <button type="button" data-page="marketPage">بازار زردآلو</button>
+      <button type="button" data-page="cartPage">سبد خرید</button>
+      <button type="button" data-page="messengerPage">پیام‌رسان</button>
+      <button type="button" data-page="reportPage">گزارش فروشنده</button>
+      <button type="button" data-page="managePage">مدیریت</button>
+      <button type="button" data-page="addProductPage">ثبت کالا</button>
+      <button type="button" data-page="aboutPage">درباره زردآلو</button>
     </nav>
     <main>
       <!-- خانه -->
@@ -263,7 +263,7 @@
               <option value="home">خانه و آشپزخانه</option>
             </select>
           </div>
-          <button class="yellow-button" id="submitProductBtn">ثبت کالا در Supabase</button>
+          <button type="button" class="yellow-button" id="submitProductBtn">ثبت کالا در Supabase</button>
           <div id="supabaseStatus"></div>
         </div>
       </section>
@@ -283,8 +283,8 @@
 
   <script>
     // ================= تنظیمات Supabase =================
-    const SUPABASE_URL = 'YOUR_SUPABASE_URL';        // ← آدرس پروژه
-    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // ← anon key
+    const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     /* ================= عناصر ================= */
@@ -302,26 +302,86 @@
     let currentUser = null;
     let isGuest = false;
 
+    /* ================= دکمه ورود (اصلاح‌شده) ================= */
+    if (loginBtn && emailForm) {
+      loginBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        console.log('دکمه ورود کلیک شد');
+        if (welcomeButtons) welcomeButtons.style.display = 'none';
+        emailForm.style.display = 'block';
+        if (emailInput) emailInput.focus();
+      });
+    } else {
+      console.error('loginBtn یا emailForm پیدا نشد!', { loginBtn, emailForm });
+    }
+
+    /* ================= دکمه میهمان ================= */
+    if (guestBtn) {
+      guestBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        console.log('ورود میهمان');
+        isGuest = true;
+        currentUser = null;
+        localStorage.setItem('zardaloo_user', 'guest');
+        showApp();
+      });
+    }
+
+    /* ================= فرم ایمیل ================= */
+    if (emailForm) {
+      emailForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const email = emailInput.value.trim();
+        if (!email || !email.includes('@') || !email.includes('.')) {
+          emailError.textContent = 'لطفاً یک ایمیل معتبر وارد کنید.';
+          emailSuccess.textContent = '';
+          return;
+        }
+        emailError.textContent = '';
+        emailSuccess.textContent = 'در حال ارسال...';
+
+        const { error } = await supabase.auth.signInWithOtp({
+          email: email,
+          options: { emailRedirectTo: window.location.href }
+        });
+
+        if (error) {
+          emailError.textContent = '❌ ' + error.message;
+          emailSuccess.textContent = '';
+        } else {
+          emailSuccess.textContent = '✅ لینک ورود به ایمیل شما ارسال شد. ایمیل را بررسی کنید.';
+          emailError.textContent = '';
+        }
+      });
+    }
+
     /* ================= بررسی وضعیت ورود اولیه ================= */
     async function initAuth() {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        currentUser = session.user;
-        showApp();
-        await loadProfileFromDB();
-      } else if (localStorage.getItem('zardaloo_user') === 'guest') {
-        isGuest = true;
-        showApp();
-      } else {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          currentUser = session.user;
+          showApp();
+          await loadProfileFromDB();
+        } else if (localStorage.getItem('zardaloo_user') === 'guest') {
+          isGuest = true;
+          showApp();
+        } else {
+          welcomeScreen.classList.remove('hidden');
+          app.classList.add('hidden');
+        }
+      } catch (err) {
+        console.error('initAuth error:', err);
+        // حتی اگر Supabase خطا داد، دکمه‌ها باید کار کنن
         welcomeScreen.classList.remove('hidden');
       }
     }
     initAuth();
 
-    // تغییر وضعیت Auth
     supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
         currentUser = session.user;
+        loadProfileFromDB();
       }
     });
 
@@ -331,45 +391,6 @@
       app.classList.remove('hidden');
       loadProducts();
     }
-
-    /* ================= ورود میهمان ================= */
-    guestBtn.addEventListener('click', () => {
-      isGuest = true;
-      localStorage.setItem('zardaloo_user', 'guest');
-      showApp();
-    });
-
-    /* ================= ورود با ایمیل (Magic Link) ================= */
-    loginBtn.addEventListener('click', () => {
-      welcomeButtons.style.display = 'none';
-      emailForm.style.display = 'block';
-      emailInput.focus();
-    });
-
-    emailForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = emailInput.value.trim();
-      if (!email || !email.includes('@') || !email.includes('.')) {
-        emailError.textContent = 'لطفاً یک ایمیل معتبر وارد کنید.';
-        emailSuccess.textContent = '';
-        return;
-      }
-      emailError.textContent = '';
-      emailSuccess.textContent = 'در حال ارسال...';
-
-      const { error } = await supabase.auth.signInWithOtp({
-        email: email,
-        options: { emailRedirectTo: window.location.href }
-      });
-
-      if (error) {
-        emailError.textContent = '❌ ' + error.message;
-        emailSuccess.textContent = '';
-      } else {
-        emailSuccess.textContent = '✅ لینک ورود به ایمیل شما ارسال شد. ایمیل را بررسی کنید.';
-        emailError.textContent = '';
-      }
-    });
 
     /* ================= ساخت پروفایل ================= */
     const avatarPreview = document.getElementById('avatarPreview');
@@ -382,57 +403,61 @@
     let selectedAvatar = '👤';
     let avatarImageData = null;
 
-    document.querySelectorAll('.avatar-option').forEach(btn => {
-      btn.addEventListener('click', () => {
+    document.querySelectorAll('.avatar-option').forEach(function (btn) {
+      btn.addEventListener('click', function () {
         selectedAvatar = btn.dataset.avatar;
         avatarImageData = null;
         avatarPreview.textContent = selectedAvatar;
       });
     });
 
-    avatarFile.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        avatarImageData = ev.target.result;
-        avatarPreview.innerHTML = `<img src="${avatarImageData}" alt="avatar">`;
-      };
-      reader.readAsDataURL(file);
-    });
+    if (avatarFile) {
+      avatarFile.addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function (ev) {
+          avatarImageData = ev.target.result;
+          avatarPreview.innerHTML = '<img src="' + avatarImageData + '" alt="avatar">';
+        };
+        reader.readAsDataURL(file);
+      });
+    }
 
-    saveProfileBtn.addEventListener('click', async () => {
-      if (!currentUser) {
-        profileStatus.textContent = '❌ ابتدا با ایمیل وارد شوید.';
-        profileStatus.style.color = 'red';
-        return;
-      }
-      const profile = {
-        id: currentUser.id,
-        name: fullName.value.trim(),
-        phone: phone.value.trim(),
-        zardaloo: zardalooNumber.value.trim(),
-        avatar: avatarImageData || selectedAvatar,
-      };
-      saveProfileBtn.disabled = true;
-      profileStatus.textContent = 'در حال ذخیره...';
+    if (saveProfileBtn) {
+      saveProfileBtn.addEventListener('click', async function () {
+        if (!currentUser) {
+          profileStatus.textContent = '❌ ابتدا با ایمیل وارد شوید.';
+          profileStatus.style.color = 'red';
+          return;
+        }
+        const profile = {
+          id: currentUser.id,
+          name: fullName.value.trim(),
+          phone: phone.value.trim(),
+          zardaloo: zardalooNumber.value.trim(),
+          avatar: avatarImageData || selectedAvatar,
+        };
+        saveProfileBtn.disabled = true;
+        profileStatus.textContent = 'در حال ذخیره...';
 
-      const { error } = await supabase.from('profiles').upsert(profile);
+        const { error } = await supabase.from('profiles').upsert(profile);
 
-      saveProfileBtn.disabled = false;
-      if (error) {
-        profileStatus.textContent = '❌ ' + error.message;
-        profileStatus.style.color = 'red';
-      } else {
-        profileStatus.textContent = '✅ پروفایل ذخیره شد.';
-        profileStatus.style.color = 'green';
-        profileSetup.classList.add('hidden');
-        showApp();
-        await loadProfileFromDB();
-      }
-    });
+        saveProfileBtn.disabled = false;
+        if (error) {
+          profileStatus.textContent = '❌ ' + error.message;
+          profileStatus.style.color = 'red';
+        } else {
+          profileStatus.textContent = '✅ پروفایل ذخیره شد.';
+          profileStatus.style.color = 'green';
+          profileSetup.classList.add('hidden');
+          showApp();
+          await loadProfileFromDB();
+        }
+      });
+    }
 
-    /* ================= بارگذاری پروفایل از Supabase ================= */
+    /* ================= بارگذاری پروفایل ================= */
     async function loadProfileFromDB() {
       if (!currentUser) return;
       const { data, error } = await supabase
@@ -444,7 +469,6 @@
       if (error) { console.error(error); return; }
 
       if (!data) {
-        // پروفایل هنوز ساخته نشده → فرم ساخت پروفایل
         profileSetup.classList.remove('hidden');
         app.classList.add('hidden');
         return;
@@ -455,68 +479,70 @@
       document.getElementById('homeZardaloo').textContent = data.zardaloo || '---';
 
       const avatarHTML = data.avatar && data.avatar.startsWith('data:')
-        ? `<img src="${data.avatar}" alt="avatar">`
+        ? '<img src="' + data.avatar + '" alt="avatar">'
         : (data.avatar || '👤');
       document.getElementById('homeAvatar').innerHTML = avatarHTML;
       document.getElementById('headerAvatar').innerHTML = avatarHTML;
     }
 
     /* ================= ناوبری صفحات ================= */
-    document.querySelectorAll('nav button').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('nav button').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('.page').forEach(function (p) { p.classList.remove('active'); });
         document.getElementById(btn.dataset.page).classList.add('active');
         if (btn.dataset.page === 'marketPage') loadProducts();
       });
     });
 
-    /* ================= ثبت کالا با Supabase ================= */
+    /* ================= ثبت کالا ================= */
     const submitProductBtn = document.getElementById('submitProductBtn');
     const supabaseStatus = document.getElementById('supabaseStatus');
 
-    submitProductBtn.addEventListener('click', async () => {
-      const title = document.getElementById('productTitle').value.trim();
-      const price = parseInt(document.getElementById('productPrice').value);
-      const category = document.getElementById('productCategory').value;
+    if (submitProductBtn) {
+      submitProductBtn.addEventListener('click', async function () {
+        const title = document.getElementById('productTitle').value.trim();
+        const price = parseInt(document.getElementById('productPrice').value);
+        const category = document.getElementById('productCategory').value;
 
-      if (!title || !price) {
-        supabaseStatus.textContent = '❌ لطفاً نام کالا و قیمت را وارد کنید.';
-        supabaseStatus.style.color = 'red';
-        return;
-      }
+        if (!title || !price) {
+          supabaseStatus.textContent = '❌ لطفاً نام کالا و قیمت را وارد کنید.';
+          supabaseStatus.style.color = 'red';
+          return;
+        }
 
-      if (!currentUser) {
-        supabaseStatus.textContent = '❌ برای ثبت کالا باید با ایمیل وارد شوید (میهمان نمی‌تواند ثبت کند).';
-        supabaseStatus.style.color = 'red';
-        return;
-      }
+        if (!currentUser) {
+          supabaseStatus.textContent = '❌ برای ثبت کالا باید با ایمیل وارد شوید (میهمان نمی‌تواند ثبت کند).';
+          supabaseStatus.style.color = 'red';
+          return;
+        }
 
-      submitProductBtn.disabled = true;
-      submitProductBtn.textContent = 'در حال ثبت...';
-      supabaseStatus.textContent = '';
+        submitProductBtn.disabled = true;
+        submitProductBtn.textContent = 'در حال ثبت...';
+        supabaseStatus.textContent = '';
 
-      const { data, error } = await supabase
-        .from('products')
-        .insert([{ title, price, category, seller_id: currentUser.id }])
-        .select();
+        const { data, error } = await supabase
+          .from('products')
+          .insert([{ title: title, price: price, category: category, seller_id: currentUser.id }])
+          .select();
 
-      submitProductBtn.disabled = false;
-      submitProductBtn.textContent = 'ثبت کالا در Supabase';
+        submitProductBtn.disabled = false;
+        submitProductBtn.textContent = 'ثبت کالا در Supabase';
 
-      if (error) {
-        console.error('Supabase error:', error);
-        supabaseStatus.textContent = '❌ خطا: ' + error.message;
-        supabaseStatus.style.color = 'red';
-      } else {
-        supabaseStatus.textContent = '✅ کالا با موفقیت در Supabase ثبت شد!';
-        supabaseStatus.style.color = 'green';
-        document.getElementById('productTitle').value = '';
-        document.getElementById('productPrice').value = '';
-        loadProducts();
-      }
-    });
+        if (error) {
+          console.error('Supabase error:', error);
+          supabaseStatus.textContent = '❌ خطا: ' + error.message;
+          supabaseStatus.style.color = 'red';
+        } else {
+          supabaseStatus.textContent = '✅ کالا با موفقیت در Supabase ثبت شد!';
+          supabaseStatus.style.color = 'green';
+          document.getElementById('productTitle').value = '';
+          document.getElementById('productPrice').value = '';
+          loadProducts();
+        }
+      });
+    }
 
-    /* ================= خواندن محصولات از Supabase ================= */
+    /* ================= خواندن محصولات ================= */
     const productsGrid = document.getElementById('productsGrid');
     const searchInput = document.getElementById('searchInput');
     const categoryFilter = document.getElementById('categoryFilter');
@@ -543,42 +569,44 @@
       const cat = categoryFilter.value;
 
       let list = allProducts;
-      if (q) list = list.filter(p => p.title.toLowerCase().includes(q));
-      if (cat) list = list.filter(p => p.category === cat);
+      if (q) list = list.filter(function (p) { return p.title.toLowerCase().includes(q); });
+      if (cat) list = list.filter(function (p) { return p.category === cat; });
 
       if (list.length === 0) {
         productsGrid.innerHTML = '<div class="loading">محصولی یافت نشد.</div>';
         return;
       }
 
-      productsGrid.innerHTML = list.map(p => `
-        <div class="product-card">
-          <h3>${escapeHTML(p.title)}</h3>
-          <div class="product-price">${Number(p.price).toLocaleString('fa-IR')} تومان</div>
-          <button class="yellow-button" onclick="addToCart(${p.id}, '${escapeJS(p.title)}', ${p.price})">افزودن به سبد</button>
-        </div>
-      `).join('');
+      productsGrid.innerHTML = list.map(function (p) {
+        return '<div class="product-card">' +
+          '<h3>' + escapeHTML(p.title) + '</h3>' +
+          '<div class="product-price">' + Number(p.price).toLocaleString('fa-IR') + ' تومان</div>' +
+          '<button type="button" class="yellow-button" onclick="addToCart(' + p.id + ', \'' + escapeJS(p.title) + '\', ' + p.price + ')">افزودن به سبد</button>' +
+        '</div>';
+      }).join('');
     }
 
     function escapeHTML(s) {
-      return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+      return String(s).replace(/[&<>"']/g, function (m) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+      });
     }
-    function escapeJS(s) { return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+    function escapeJS(s) { return String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
 
-    searchInput.addEventListener('input', renderProducts);
-    categoryFilter.addEventListener('change', renderProducts);
+    if (searchInput) searchInput.addEventListener('input', renderProducts);
+    if (categoryFilter) categoryFilter.addEventListener('change', renderProducts);
 
     /* ================= سبد خرید ================= */
     const cartItems = document.getElementById('cartItems');
     const cartSummary = document.getElementById('cartSummary');
     let cart = JSON.parse(localStorage.getItem('zardaloo_cart') || '[]');
 
-    function addToCart(id, title, price) {
-      cart.push({ id, title, price });
+    window.addToCart = function (id, title, price) {
+      cart.push({ id: id, title: title, price: price });
       localStorage.setItem('zardaloo_cart', JSON.stringify(cart));
       renderCart();
       alert('به سبد اضافه شد ✅');
-    }
+    };
 
     function renderCart() {
       if (cart.length === 0) {
@@ -586,24 +614,6 @@
         cartSummary.style.display = 'none';
         return;
       }
-      cartItems.innerHTML = cart.map((item, i) => `
-        <div class="cart-item">
-          <strong>${escapeHTML(item.title)}</strong> — ${Number(item.price).toLocaleString('fa-IR')} تومان
-          <button class="red-button" onclick="removeFromCart(${i})">حذف</button>
-        </div>
-      `).join('');
-      const total = cart.reduce((sum, item) => sum + Number(item.price), 0);
-      cartSummary.style.display = 'block';
-      cartSummary.innerHTML = `جمع کل: <strong>${total.toLocaleString('fa-IR')} تومان</strong>`;
-    }
-
-    function removeFromCart(index) {
-      cart.splice(index, 1);
-      localStorage.setItem('zardaloo_cart', JSON.stringify(cart));
-      renderCart();
-    }
-
-    renderCart();
-  </script>
-</body>
-</html>
+      cartItems.innerHTML = cart.map(function (item, i) {
+        return '<div class="cart-item">' +
+         
